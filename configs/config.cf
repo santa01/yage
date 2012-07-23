@@ -1,0 +1,21 @@
+[video]
+width = 800
+height = 600
+fov = 90
+fullscreen = 0
+
+[engine]
+verbose = 2
+
+[game]
+forward_speed = 100
+backward_speed = 50
+step_speed = 70
+
+[controls]
+forward = 25
+backward = 39
+step_left = 38
+step_right = 40
+crouch = 37
+jump = 65
