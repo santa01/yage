@@ -1,0 +1,8 @@
+#define FOO "${FOO}"
+
+// #cmakedefine HAVE_XRANDR_H
+// #ifdef HAVE_XRANDR_H
+// # include <X11/extensions/Xrandr.h>
+// #else
+// # error "Xrand.h not found, please install libxrandr development headers"
+// #endif // HAVE_XRANDR_H
