@@ -1,6 +1,7 @@
 #version 330
 
 #define MAX_LIGHTS          16
+#define M_PI                3.14159265358979323846
 
 #define TYPE_DIRECTED       0
 #define TYPE_POINT          1
@@ -71,7 +72,7 @@ float getSpotFactor(in LightSource lightSource) {
             return 1.0f;
         case TYPE_SPOT:
             float viewAngle = pow(dot(lightSource.direction, normalize(fragmentPosition - lightSource.position)), 2.0f);
-            float maxAngle = pow(cos(lightSource.size * 3.1415f / 360.0f), 2.0f);
+            float maxAngle = pow(cos(lightSource.size * M_PI / 360.0f), 2.0f);
             if (viewAngle < maxAngle) {
                 return 0.0f;
             }

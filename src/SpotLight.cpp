@@ -1,4 +1,5 @@
 #include <memory.h>
+#include <cmath>
 
 #include "SpotLight.h"
 #include "Light.h"
@@ -29,7 +30,7 @@ float SpotLight::getZAngle() const {
 }
 
 void SpotLight::rotate(const Vec3& vector, float angle) {
-    Quaternion q(vector, angle * 3.1415f / 180.0f);
+    Quaternion q(vector, angle * M_PI / 180.0f);
     q.normalize();
     
     this->direction = q.extractMat4().extractMat3() * this->direction;
