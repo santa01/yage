@@ -2,6 +2,7 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <memory.h>
+#include <cmath>
 #include <fstream>
 #include <string>
 
@@ -121,7 +122,7 @@ float Mesh::getZAngle() const {
 }
 
 void Mesh::rotate(const Vec3& vector, float angle) {
-    Quaternion q(vector, angle * 3.1415f / 180.0f);
+    Quaternion q(vector, angle * M_PI / 180.0f);
     q.normalize();
     
     this->rotationMatrix = q.extractMat4();
