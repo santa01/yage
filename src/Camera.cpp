@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "Camera.h"
 #include "Mat3.h"
 #include "Mat4.h"
@@ -46,7 +48,7 @@ float Camera::getZAngle() const {
 }
 
 void Camera::rotate(const Vec3& vector, float angle) {
-    Quaternion q(vector, angle * 3.1415f / 180.0f);
+    Quaternion q(vector, angle * M_PI / 180.0f);
     q.normalize();
     
     Mat3 rotationMatrix = q.extractMat4().extractMat3();

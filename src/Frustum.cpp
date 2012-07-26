@@ -47,7 +47,7 @@ void Frustum::updateClipDistances() {
 }
 
 void Frustum::updateFieldOfView() {
-    this->perspective.set(0, 0, 1.0f / (tanf(this->fov * 3.1415f / 180.0f / 2.0f) *
+    this->perspective.set(0, 0, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f) *
                                 this->aspectRatio));
-    this->perspective.set(1, 1, 1.0f / (tanf(this->fov * 3.1415f / 180.0f / 2.0f)));
+    this->perspective.set(1, 1, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f)));
 }
