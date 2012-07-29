@@ -11,7 +11,9 @@
 #include <iostream>
 #include <cstdlib>
 
-using namespace std;
+using std::string;
+using std::cout;
+using std::endl;
 
 SampleTest::SampleTest() {}
 

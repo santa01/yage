@@ -20,7 +20,8 @@ endif(X11_FOUND)
 find_package(OpenGL REQUIRED gl)
 if(OPENGL_FOUND)
     set(INCLUDE ${INCLUDE} ${OPENGL_INCLUDE_DIR})
-    set(LIBRARIES ${LIBRARIES} ${OPENGL_gl_LIBRARY})
+    set(YAGE_OPENGL ${OPENGL_gl_LIBRARY} CACHE FILEPATH "OpenGL library used for building yage (useful for bumblebee users)")
+    set(LIBRARIES ${LIBRARIES} ${YAGE_OPENGL})
 endif(OPENGL_FOUND)
 
 # TODO: custom modules
@@ -32,44 +33,40 @@ endif(OPENGL_FOUND)
 
 # configure project files
 set(SRC
-    src/RenderEffect.cpp
-    src/TGAImage.cpp
-    src/Vec3.cpp
-    src/Image.cpp
-    src/Mat4.cpp
-    src/Rotatable.cpp
-    src/Camera.cpp
-    src/Scene.cpp
-    src/DirectedLight.cpp
-    src/Scalable.cpp
-    src/Quaternion.cpp
-    src/Texture.cpp
-    src/Frustum.cpp
-    src/Extention.cpp
-    src/Mat3.cpp
-    src/Game.cpp
-    src/Movable.cpp
-    src/Renderable.cpp
-    src/Light.cpp
-    src/Mesh.cpp
-    src/OpenGLWindow.cpp
-    src/Renderer.cpp
-    src/Logger.cpp
-    src/SpotLight.cpp
-    src/ShaderLoader.cpp
-    src/PointLight.cpp
-    src/Vec4.cpp
+    src/RenderEffect.cpp        src/TGAImage.cpp        src/Vec3.cpp
+    src/Image.cpp               src/Mat4.cpp            src/Rotatable.cpp
+    src/Camera.cpp              src/Scene.cpp           src/DirectedLight.cpp
+    src/Scalable.cpp            src/Quaternion.cpp      src/Texture.cpp
+    src/Frustum.cpp             src/Extention.cpp       src/Mat3.cpp
+    src/Game.cpp                src/Movable.cpp         src/Renderable.cpp
+    src/Light.cpp               src/Mesh.cpp            src/OpenGLWindow.cpp
+    src/Renderer.cpp            src/Logger.cpp          src/SpotLight.cpp
+    src/ShaderLoader.cpp        src/PointLight.cpp      src/Vec4.cpp
     src/Config.cpp
+)
+# aux_source_directory(src SRC)
+
+set(HEADERS
+    include/Rotatable.h         include/Mat4.h          include/configuration.h
+    include/TGAImage.h          include/Image.h         include/Logger.h
+    include/Mesh.h              include/Config.h        include/Mat3.h
+    include/Vec4.h              include/Scalable.h      include/Light.h
+    include/SpotLight.h         include/OpenGLWindow.h  include/Movable.h
+    include/DirectedLight.h     include/Quaternion.h    include/PointLight.h
+    include/Frustum.h           include/Camera.h        include/RenderEffect.h
+    include/Renderer.h          include/Vec3.h          include/Scene.h
+    include/Extention.h         include/Texture.h       include/Game.h
+    include/Renderable.h        include/ShaderLoader.h
 )
 
 # where to search sources and headers
 set(INCLUDE ${INCLUDE} "${PROJECT_SOURCE_DIR}/src" "${PROJECT_SOURCE_DIR}/include" ${CMAKE_BINARY_DIR})
 
 set(FOO "Bar")
+set(HAVE_XRANDR_H ${X11_Xrandr_FOUND})
 configure_file(config.h.in config.h) # preprocess config.h.in header
 
-add_library(${PROJECT} SHARED ${SRC})
-install(TARGETS ${PROJECT} DESTINATION lib)
+add_library(${PROJECT} SHARED ${SRC} ${HEADERS})
 include_directories(${INCLUDE})
 target_link_libraries(${PROJECT} ${LIBRARIES})
 
@@ -79,9 +76,11 @@ set(EXE_SRC src/main.cpp)
 add_executable(${EXE} ${EXE_SRC})
 target_link_libraries(${EXE} ${PROJECT})
 
+install(TARGETS ${PROJECT} DESTINATION lib)
+install(FILES ${HEADERS} DESTINATION include/${PROJECT})
 
 # CTest
-set(MAKE_TESTS "FALSE" CACHE BOOL "Build tests with application")
+option(MAKE_TESTS "Build tests with application" OFF)
 if(${MAKE_TESTS})
     set(TESTS
         sample
@@ -94,11 +93,14 @@ if(${MAKE_TESTS})
 endif(${MAKE_TESTS})
 
 # CPack
+include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_NAME ${PROJECT})
-set(CPACK_PACKAGE_VENDOR "Nobody")
+set(CPACK_PACKAGE_VENDOR "YAGE Project")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/README")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "YAGE - Yet Another Game Engine")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Nobody debian")
+
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Nobody")
+set(CPACK_DEBIAN_PACKAGE_SECTION "games")
 
 set(CPACK_PACKAGE_VERSION "0.0.1")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
