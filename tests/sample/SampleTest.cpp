@@ -1,5 +1,3 @@
-#include "SampleTest.h"
-
 #include <cppunit/TestCase.h>
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestCaller.h>
@@ -10,6 +8,8 @@
 #include <exception>
 #include <iostream>
 #include <cstdlib>
+
+#include "SampleTest.h"
 
 using std::string;
 using std::cout;
