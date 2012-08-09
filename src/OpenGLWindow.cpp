@@ -237,7 +237,8 @@ void OpenGLWindow::initWindow() {
     };
 
     this->glxContext = glXCreateContextAttribsARB(this->display, fbConfig,
-            NULL, True, contextAttributes);
+           NULL, True, contextAttributes);
+
     if (!this->glxContext) {
         XDestroyWindow(this->display, this->window);
         XFreeColormap(this->display, this->colormap);
