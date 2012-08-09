@@ -9,9 +9,9 @@
 class SampleTest : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(SampleTest);
 
-    CPPUNIT_TEST(testConcat);
+    CPPUNIT_TEST(testSuccess);
     CPPUNIT_TEST_EXCEPTION(testException, std::exception);
-//     CPPUNIT_TEST(testFailure);
+//     CPPUNIT_TEST(testFailure); // This test will fail
 
     CPPUNIT_TEST_SUITE_END();
 private:
@@ -23,7 +23,7 @@ public:
     void setUp();
     void tearDown();
 
-    void testConcat();
+    void testSuccess();
     void testException();
     void testFailure();
 

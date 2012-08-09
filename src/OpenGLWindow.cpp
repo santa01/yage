@@ -229,17 +229,16 @@ void OpenGLWindow::initWindow() {
     
     XMapRaised(this->display, this->window);
 
-//    int contextAttributes[] = {
-//        GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
-//        GLX_CONTEXT_MINOR_VERSION_ARB, 3,
-//        GLX_CONTEXT_FLAGS_ARB, GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-//        None
-//    };
+    int contextAttributes[] = {
+        GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+        GLX_CONTEXT_MINOR_VERSION_ARB, 3,
+        GLX_CONTEXT_FLAGS_ARB, GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+        None
+    };
 
-//    TODO: check GL_ARB_pixel_buffer_object extension
-//    this->glxContext = glXCreateContextAttribsARB(this->display, fbConfig,
-//            NULL, True, contextAttributes);
-    this->glxContext = glXCreateContext(this->display, visualInfo, 0, GL_TRUE);
+    this->glxContext = glXCreateContextAttribsARB(this->display, fbConfig,
+           NULL, True, contextAttributes);
+
     if (!this->glxContext) {
         XDestroyWindow(this->display, this->window);
         XFreeColormap(this->display, this->colormap);

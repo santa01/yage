@@ -25,7 +25,7 @@ void SampleTest::tearDown() {
     delete m_instance;
 }
 
-void SampleTest::testConcat() {
+void SampleTest::testSuccess() {
     *m_instance = "";
     CPPUNIT_ASSERT(*m_instance + "test" == "test");
 }
@@ -46,7 +46,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION(SampleTest);
 int main() {
     CppUnit::TextUi::TestRunner runner;
     CppUnit::TestFactoryRegistry &registry = CppUnit::TestFactoryRegistry::getRegistry();
-//   CppUnit::TestResult result;
     runner.addTest(registry.makeTest());
 
     return runner.run() ? EXIT_SUCCESS : EXIT_FAILURE;
