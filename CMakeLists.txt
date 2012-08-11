@@ -3,11 +3,17 @@ cmake_minimum_required(VERSION 2.8)
 set(PROJECT yage)
 project(${PROJECT} C CXX)
 
+set(PROJECT_VERSION_MAJOR "0")
+set(PROJECT_VERSION_MINOR "0")
+set(PROJECT_VERSION_PATCH "1")
+set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+set(PROJECT_SUMMARY "Yet Another Game Engine")
+
 if(${PROJECT_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
   message(
     FATAL_ERROR "Building in source root is forbidden.\n"
     "Try to build in another directory e.g.\n"
-    ${PROJECT_SOURCE_DIR} "/build"
+    "${PROJECT_SOURCE_DIR}/build"
   )
 endif(${PROJECT_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 
@@ -55,6 +61,34 @@ target_link_libraries(${EXE} ${PROJECT})
 install(TARGETS ${PROJECT} DESTINATION lib)
 install(FILES ${YAGE_HEADERS} DESTINATION include/${PROJECT})
 
+# Documenation
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    set(HAVE_DOT "NO")
+    set(GENERATE_QHP "NO")
+    option(MAKE_API_DOCS "Generate API documentation (doxygen)" ON)
+
+    if(DOXYGEN_DOT_FOUND)
+        set(HAVE_DOT "YES")
+    endif(DOXYGEN_DOT_FOUND)
+
+    find_package(Qt4)
+    if(QT4_FOUND) # TODO find qhelpgenerator
+        set(GENERATE_QHP "YES")
+    endif(QT4_FOUND)
+
+    configure_file(Doxyfile.in Doxyfile @ONLY)
+endif(DOXYGEN_FOUND)
+
+if(MAKE_API_DOCS)
+    make_directory("${CMAKE_BINARY_DIR}/docs")
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_BINARY_DIR}/Doxyfile"
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+    )
+endif(MAKE_API_DOCS)
+
 # CTest
 option(MAKE_TESTS "Build tests with application" OFF)
 if(${MAKE_TESTS})
@@ -73,15 +107,15 @@ include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_NAME ${PROJECT})
 set(CPACK_PACKAGE_VENDOR "YAGE Project")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/README")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "YAGE - Yet Another Game Engine")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_SUMMARY})
 
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Nobody")
 set(CPACK_DEBIAN_PACKAGE_SECTION "games")
 
-set(CPACK_PACKAGE_VERSION "0.0.1")
-set(CPACK_PACKAGE_VERSION_MAJOR "0")
-set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH "1")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 
 set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README")
 set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/COPYING")
