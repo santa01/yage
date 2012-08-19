@@ -72,10 +72,10 @@ if(DOXYGEN_FOUND)
         set(HAVE_DOT "YES")
     endif(DOXYGEN_DOT_FOUND)
 
-    find_package(Qt4)
-    if(QT4_FOUND) # TODO find qhelpgenerator
-        set(GENERATE_QHP "YES")
-    endif(QT4_FOUND)
+    find_program(QHELPGENERATOR_EXECUTABLE qhelpgenerator)
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(QHELPGENERATOR DEFAULT_MSG QHELPGENERATOR_EXECUTABLE)
+    set(GENERATE_QHP ${QHELPGENERATOR_FOUND})
 
     configure_file(Doxyfile.in Doxyfile @ONLY)
 endif(DOXYGEN_FOUND)
