@@ -1,3 +1,4 @@
+#define _ISOC99_SOURCE
 #include <cmath>
 
 #include "Camera.h"
@@ -5,22 +6,26 @@
 #include "Mat4.h"
 #include "Vec3.h"
 #include "Quaternion.h"
+#include "PerspectiveProjection.h"
 
-Camera::Camera():
-        up(0.0f, 1.0f, 0.0f),
-        target(0.0f, 0.0f, 1.0f) {
+Camera::Camera() {
+    this->projection = new PerspectiveProjection();
 }
 
-Camera::Camera(float x, float y, float z):
-        up(0.0f, 1.0f, 0.0f),
-        target(0.0f, 0.0f, 1.0f) {
-    this->setPosition(x, y, z); 
+Camera::Camera(float x, float y, float z) {
+    this->setPosition(x, y, z);
+    this->projection = new PerspectiveProjection();
 }
 
-Camera::Camera(const Vec3& position):
-        up(0.0f, 1.0f, 0.0f),
-        target(0.0f, 0.0f, 1.0f) {
+Camera::Camera(const Vec3& position) {
     this->setPosition(position);
+    this->projection = new PerspectiveProjection();
+}
+
+Camera::~Camera() {
+    if (this->projection) {
+        delete this->projection;
+    }
 }
 
 void Camera::setPosition(const Vec3& position) {
@@ -51,33 +56,47 @@ float Camera::getZAngle() const {
 }
 
 void Camera::rotate(const Vec3& vector, float angle) {
-    Quaternion q(vector, angle * M_PI / 180.0f);
+    Vec3 axis(vector);
+    Quaternion q(axis.normalize(), angle * M_PI / 180.0f);
     q.normalize();
     
     Mat3 rotationMatrix = q.extractMat4().extractMat3();
-    this->up = rotationMatrix * this->up;
-    this->target = rotationMatrix * this->target;
+    Vec3 up(this->rotationMatrix.get(1, 0),
+            this->rotationMatrix.get(1, 1),
+            this->rotationMatrix.get(1, 2));
+    Vec3 target(this->rotationMatrix.get(2, 0),
+                this->rotationMatrix.get(2, 1),
+                this->rotationMatrix.get(2, 2));
+    up = rotationMatrix * up;
+    target = rotationMatrix * target;
     
-    Vec3 right = this->up.cross(this->target);
+    Vec3 right = target.cross(up);
     right.normalize();
 
-    this->rotationMatrix.set(0, 0, right.get(Vec3::X));
-    this->rotationMatrix.set(0, 1, right.get(Vec3::Y));
-    this->rotationMatrix.set(0, 2, right.get(Vec3::Z));
-    
-    this->rotationMatrix.set(1, 0, this->up.get(Vec3::X));
-    this->rotationMatrix.set(1, 1, this->up.get(Vec3::Y));
-    this->rotationMatrix.set(1, 2, this->up.get(Vec3::Z));
-    
-    this->rotationMatrix.set(2, 0, this->target.get(Vec3::X));
-    this->rotationMatrix.set(2, 1, this->target.get(Vec3::Y));
-    this->rotationMatrix.set(2, 2, this->target.get(Vec3::Z));
+    this->updateRotationMatrix(right, up, target);
+}
+
+Vec3 Camera::getUpVector() const {
+    return Vec3(this->rotationMatrix.get(1, 0),
+                this->rotationMatrix.get(1, 1),
+                this->rotationMatrix.get(1, 2));
+}
+
+Vec3 Camera::getTargetVector() const {
+    return Vec3(this->rotationMatrix.get(2, 0),
+                this->rotationMatrix.get(2, 1),
+                this->rotationMatrix.get(2, 2));
 }
 
 Vec3 Camera::getRightVector() const {
-    Vec3 right = this->up.cross(this->target);
-    right.normalize();
-    return right;
+    Vec3 up(this->rotationMatrix.get(1, 0),
+            this->rotationMatrix.get(1, 1),
+            this->rotationMatrix.get(1, 2));
+    Vec3 target(this->rotationMatrix.get(2, 0),
+                this->rotationMatrix.get(2, 1),
+                this->rotationMatrix.get(2, 2));
+    Vec3 right = target.cross(up);
+    return right.normalize();
 }
 
 void Camera::lookAt(float x, float y, float z) {
@@ -85,14 +104,29 @@ void Camera::lookAt(float x, float y, float z) {
 }
 
 void Camera::lookAt(const Vec3& vector) {
-    Vec3 currentTarget = this->target;
-    currentTarget.normalize();
+    Vec3 target(-vector);
+    target.normalize();
     
-    Vec3 newTarget = vector;
-    newTarget.normalize();
+    Vec3 baseUp(0.0f, 1.0f, 0.0f);
+    Vec3 right = target.cross(baseUp);
+    right.normalize();
     
-    Vec3 rotationAxis = currentTarget.cross(vector);
-    float angle = currentTarget.dot(vector);
+    Vec3 up = right.cross(target);
+    up.normalize();
     
-    this->rotate(rotationAxis, angle);
+    this->updateRotationMatrix(right, up, target);
+}
+
+void Camera::updateRotationMatrix(const Vec3& right, const Vec3& up, const Vec3& target) {
+    this->rotationMatrix.set(0, 0, right.get(Vec3::X));
+    this->rotationMatrix.set(0, 1, right.get(Vec3::Y));
+    this->rotationMatrix.set(0, 2, right.get(Vec3::Z));
+    
+    this->rotationMatrix.set(1, 0, up.get(Vec3::X));
+    this->rotationMatrix.set(1, 1, up.get(Vec3::Y));
+    this->rotationMatrix.set(1, 2, up.get(Vec3::Z));
+    
+    this->rotationMatrix.set(2, 0, target.get(Vec3::X));
+    this->rotationMatrix.set(2, 1, target.get(Vec3::Y));
+    this->rotationMatrix.set(2, 2, target.get(Vec3::Z));
 }

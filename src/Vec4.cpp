@@ -68,6 +68,13 @@ bool Vec4::operator !=(const Vec4& vector) const {
     return !(*this == vector);
 }
 
+Vec4 Vec4::operator -() const {
+    return Vec4(-this->vector[Vec4::X],
+                -this->vector[Vec4::Y],
+                -this->vector[Vec4::Z],
+                -this->vector[Vec4::W]);
+}
+
 float Vec4::dot(const Vec4& vector) const {
     return this->vector[Vec4::X] * vector.get(Vec4::X) +
            this->vector[Vec4::Y] * vector.get(Vec4::Y) +

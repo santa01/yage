@@ -1,12 +1,15 @@
 #version 330
 
-#define MAX_LIGHTS          16
+#define MAX_LIGHTS          12
+#define MAX_MATERIALS       16
 #define M_PI                3.14159265358979323846
+#define BIAS                0.00001
 
 #define TYPE_DIRECTED       0
 #define TYPE_POINT          1
 #define TYPE_SPOT           2
 
+/* Dont change fields order! */
 struct LightSource {
     int type;
     float energy;
@@ -15,19 +18,31 @@ struct LightSource {
     vec3 color;
     float blend;
     vec3 position;
+    bool shadow;
     vec3 direction;
 };
 
-layout(std140) uniform MaterialParameters {
+/* Dont change fields order! */
+struct Masterial {
     float diffuseIntensity;
     float specularIntensity;
     float specularExponent;
-} materialParameters;
+};
 
 layout(std140) uniform AmbientLight {
     vec3 color;
     float intensity;
 } ambientLight;
+
+layout(std140) uniform MeshParameters {
+    int castsShadow;
+    int receivesShadow;
+} meshParameters;
+
+layout(std140) uniform MaterialParameters {
+    int materialsCount;
+    Masterial materials[MAX_MATERIALS];
+} materialParameters;
 
 layout(std140) uniform Light {
     int sourcesCount;
@@ -36,12 +51,20 @@ layout(std140) uniform Light {
 
 uniform vec3 cameraPosition;
 uniform sampler2D diffuseTextureSampler;
+uniform sampler2D specularTextureSampler;
+uniform sampler2D shadowMapSamplers[MAX_LIGHTS];
 
 smooth in vec3 fragmentPosition;
 smooth in vec3 fragmentNormal;
 smooth in vec2 fragmentUv;
+smooth in vec4 lightSpaceFragmentPosition;
 
 out vec4 fragmentColor;
+
+const mat4 normalizedToUvMatrix = mat4(0.5f, 0.0f, 0.0f, 0.0f,
+                                       0.0f, 0.5f, 0.0f, 0.0f,
+                                       0.0f, 0.0f, 0.5f, 0.0f,
+                                       0.5f, 0.5f, 0.5f, 1.0f);
 
 vec3 getLightDirection(in LightSource lightSource) {
     switch (lightSource.type) {
@@ -87,8 +110,28 @@ float getSpotFactor(in LightSource lightSource) {
     }
 }
 
+float getShadowFactor(in LightSource lightSource) {
+    if (lightSource.shadow) {
+        switch (lightSource.type) {
+            case TYPE_POINT:
+            case TYPE_DIRECTED:
+                return 0.0f;
+            case TYPE_SPOT:
+                vec4 ndcLightSpaceFragmentPosition = lightSpaceFragmentPosition / lightSpaceFragmentPosition.w;
+                vec3 occludeFragmentPosition = (normalizedToUvMatrix * ndcLightSpaceFragmentPosition).xyz;
+                float shadowMapDepth = texture(shadowMapSamplers[0], occludeFragmentPosition.st);
+
+                if (occludeFragmentPosition.z + BIAS < shadowMapDepth) {
+                    return 0.0f;
+                }
+        }
+    }
+
+    return 1.0f;
+}
+
 void main() {
-    vec4 diffuseTextureColor = texture(diffuseTextureSampler, fragmentUv.st);
+    vec4 diffuseTextureColor = texture(diffuseTextureSampler, fragmentUv);
     vec3 normal = normalize(fragmentNormal);
 
     vec4 ambientColor = vec4(ambientLight.color, 1.0f) *
@@ -101,14 +144,15 @@ void main() {
         vec4 specularColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
         vec3 direction = getLightDirection(light.sources[i]);
-        float spotFactor = getSpotFactor(light.sources[i]);
         float diffuseFactor = dot(normal, -direction);
+        float spotFactor = getSpotFactor(light.sources[i]);
+        float shadowFactor = getShadowFactor(light.sources[i]);
 
         if (diffuseFactor > 0) {
             float attenuation = getLightAttenuation(light.sources[i]);
             diffuseColor = vec4(light.sources[i].color, 1.0f) *
                            light.sources[i].energy * attenuation *
-                           materialParameters.diffuseIntensity *
+                           materialParameters.materials[0].diffuseIntensity *
                            diffuseFactor;
 
             vec3 viewerDirection = normalize(cameraPosition - fragmentPosition);
@@ -118,12 +162,12 @@ void main() {
             if (specularFactor > 0) {
                 specularColor = vec4(light.sources[i].color, 1.0f) *
                                 light.sources[i].energy * attenuation *
-                                materialParameters.specularIntensity *
-                                pow(specularFactor, materialParameters.specularExponent);
+                                materialParameters.materials[0].specularIntensity *
+                                pow(specularFactor, materialParameters.materials[0].specularExponent);
             }
         }
 
-        lightColor += (diffuseColor + specularColor) * spotFactor;
+        lightColor += (diffuseColor + specularColor) * spotFactor * shadowFactor;
     }
 
     fragmentColor = diffuseTextureColor * (ambientColor + lightColor);

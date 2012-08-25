@@ -3,7 +3,7 @@
 
 #include "Mat4.h"
 #include "Vec3.h"
-#include "Frustum.h"
+#include "Projection.h"
 #include "Movable.h"
 #include "Rotatable.h"
 
@@ -11,11 +11,12 @@
  * \class Camera
  * \brief Represents a first-person camera
  */
-class Camera: public Frustum, public Movable, public Rotatable {
+class Camera: public Movable, public Rotatable {
     public:
         Camera();
         Camera(float x, float y, float z);
         Camera(const Vec3& position);
+        ~Camera();
 
         using Movable::setPosition;
         
@@ -36,22 +37,25 @@ class Camera: public Frustum, public Movable, public Rotatable {
             return this->rotationMatrix;
         }
         
-        Vec3 getUpVector() const {
-            return this->up;
+        Projection* getProjection() {
+            return this->projection;
+        }
+
+        void setProjection(Projection* projection) {
+            this->projection = projection;
         }
         
-        Vec3 getTargetVector() const {
-            return this->target;
-        }
-        
+        Vec3 getUpVector() const;
+        Vec3 getTargetVector() const;
         Vec3 getRightVector() const;
         
         void lookAt(float x, float y, float z);
         void lookAt(const Vec3& target);
 
     private:
-        Vec3 up;
-        Vec3 target;
+        void updateRotationMatrix(const Vec3& right, const Vec3& up, const Vec3& target);
+        
+        Projection* projection;
         Mat4 translationMatrix;
         Mat4 rotationMatrix;
 };

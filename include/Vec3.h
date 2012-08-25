@@ -22,10 +22,11 @@ class Vec3 {
         Vec3& operator *=(float scalar);
         bool operator ==(const Vec3& vector) const;
         bool operator !=(const Vec3& vector) const;
+        Vec3 operator -() const;
         
         float dot(const Vec3& vector) const;
         Vec3 cross(const Vec3& vector) const;
-        void normalize();
+        Vec3& normalize();
         float length() const;
         float squareLength() const;
 

@@ -12,8 +12,13 @@ class SpotLight: public Light, public Rotatable, public Movable {
 
         using Movable::setPosition;
         
+        void setPosition(float x, float y, float z) {
+            this->setPosition(Vec3(x, y, z));
+        }
+        
         void setPosition(const Vec3& position) {
             this->position = position;
+            this->setValid(false);
         }
         
         Vec3 getPosition() const {
@@ -34,6 +39,7 @@ class SpotLight: public Light, public Rotatable, public Movable {
         
         void setDirection(const Vec3& direction) {
             this->direction = direction;
+            this->setValid(false);
         }
         
         const Vec3& getDirection() const {
@@ -46,6 +52,7 @@ class SpotLight: public Light, public Rotatable, public Movable {
 
         void setSize(float size) {
             this->size = size;
+            this->setValid(false);
         }
         
         float getBlend() const {
@@ -54,6 +61,7 @@ class SpotLight: public Light, public Rotatable, public Movable {
 
         void setBlend(float blend) {
             this->blend = blend;
+            this->setValid(false);
         }
         
         float getFalloff() const {
@@ -62,6 +70,7 @@ class SpotLight: public Light, public Rotatable, public Movable {
 
         void setFalloff(float falloff) {
             this->falloff = falloff;
+            this->setValid(false);
         }
 
     private:

@@ -11,9 +11,9 @@
 #include "Renderable.h"
 #include "Scene.h"
 #include "DirectedLight.h"
-#include "configuration.h"
 #include "PointLight.h"
 #include "SpotLight.h"
+#include "configuration.h"
 
 Renderer::Renderer():
         OpenGLWindow() {
@@ -81,6 +81,7 @@ void Renderer::onInit() {
         mesh->setEffect(effect);
         mesh->setPosition(3.0f, 0.0f, 0.0f);
         mesh->roll(45.0f);
+        mesh->setCastsShadow(true);
         this->scene->addRenderable(mesh);
     }
 
@@ -91,8 +92,10 @@ void Renderer::onInit() {
     //this->scene->addLight(light1);
     
     SpotLight* light2 = new SpotLight();
-    light2->setPosition(5.0f, 5.0f, 5.0f);
-    light2->pitch(35.0f);
+    light2->setPosition(3.0f, 3.0f, 0.0f);
+    light2->setSize(45.0f);
+    light2->pitch(10.0f);
+    light2->roll(5.0f);
     this->scene->addLight(light2);
     
     this->scene->setAmbientLightIntensity(0.2f);
@@ -127,12 +130,12 @@ void Renderer::onIdle() {
     float corrention = this->getFrameTime();
 
     if (this->keysStates[FORWARD]) {
-        cameraPosition += this->scene->getCamera().getTargetVector() *
+        cameraPosition -= this->scene->getCamera().getTargetVector() *
                           FORWARD_SPEED * corrention;
     }
 
     if (this->keysStates[BACKWARD]) {
-        cameraPosition -= this->scene->getCamera().getTargetVector() *
+        cameraPosition += this->scene->getCamera().getTargetVector() *
                           BACKWARD_SPEED  * corrention;
     }
 
@@ -148,8 +151,6 @@ void Renderer::onIdle() {
 
 //    if (this->keyStates[JUMP])
 //    if (this->keyStates[CROUCH])
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->scene->getCamera().setPosition(cameraPosition);
     this->scene->render();

@@ -11,9 +11,14 @@ class PointLight: public Light, public Movable {
         ~PointLight();
         
         using Movable::setPosition;
+
+        void setPosition(float x, float y, float z) {
+            this->setPosition(Vec3(x, y, z));
+        }
         
         void setPosition(const Vec3& position) {
             this->position = position;
+            this->setValid(false);
         }
         
         Vec3 getPosition() const {
@@ -28,6 +33,7 @@ class PointLight: public Light, public Movable {
 
         void setFalloff(float falloff) {
             this->falloff = falloff;
+            this->setValid(false);
         }
 
     private:

@@ -18,6 +18,7 @@ LightData PointLight::getLightData() const {
     data.type = this->type;
     data.energy = this->energy;
     data.falloff = this->falloff;
+    data.shadow = this->shadow;
     memcpy(data.color, this->color.data(), sizeof(data.color));
     memcpy(data.position, this->position.data(), sizeof(data.position));
     

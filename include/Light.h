@@ -17,7 +17,7 @@ typedef struct {
     float color[3];             // 12 bytes, aligned to vec4 size (16 bytes)
     float blend;                // 4 bytes
     float position[3];          // 12 bytes, aligned to vec4 size (16 bytes)
-    char _positionPadding[4];   // 4 bytes
+    int shadow;                 // 4 bytes
     float direction[3];         // 12 bytes, aligned to vec4 size (16 bytes)
     char _directionPadding[4];  // 4 bytes
 } LightData;                    // 64 bytes total
@@ -47,18 +47,37 @@ class Light {
         
         void setColor(const Vec3& color) {
             this->color = color;
+            this->setValid(false);
         }
         
         const Vec3& getColor() const {
             return this->color;
         }
-
+        
         void setEnergy(float energy) {
             this->energy = energy;
+            this->setValid(false);
         }
         
         float getEnergy() const {
             return this->energy;
+        }
+        
+        void setShadow(bool shadow) {
+            this->shadow = shadow;
+            this->setValid(false);
+        }
+        
+        bool isShadow() const {
+            return this->shadow;
+        }
+        
+        void setValid(bool valid) {
+            this->valid = valid;
+        }
+        
+        bool isValid() const {
+            return this->valid;
         }
         
         virtual LightData getLightData() const = 0;
@@ -69,6 +88,8 @@ class Light {
         
         int type;
         float energy;
+        bool shadow;
+        bool valid;
 };
 
 #endif	/* LIGHT_H */

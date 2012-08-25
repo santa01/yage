@@ -26,6 +26,7 @@ class RenderEffect {
         
         void setMVPMatrix(const Mat4& mvpMatrix);
         void setMVMatrix(const Mat4& mvMatrix);
+        void setLightMVPMatrix(const Mat4& lightSpaceMvpMatrix);
         void setCameraPosition(const Vec3& cameraPosition);
 
         void setMaterial(GLuint materialBuffer);
@@ -50,6 +51,7 @@ class RenderEffect {
         
         GLint mvp;                              // vertex shader
         GLint mv;                               // vertex shader
+        GLint lightSpaceMvp;                    // vertex shader
         GLint cameraPosition;                   // fragment shader
         GLint textureSampler;                   // fragment shader
 };

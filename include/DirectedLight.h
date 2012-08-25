@@ -24,6 +24,7 @@ class DirectedLight: public Light, public Rotatable {
         
         void setDirection(const Vec3& direction) {
             this->direction = direction;
+            this->setValid(false);
         }
         
         const Vec3& getDirection() const {

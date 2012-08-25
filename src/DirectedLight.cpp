@@ -34,6 +34,7 @@ void DirectedLight::rotate(const Vec3& vector, float angle) {
     q.normalize();
     
     this->direction = q.extractMat4().extractMat3() * this->direction;
+    this->setValid(false);
 }
 
 LightData DirectedLight::getLightData() const {
@@ -42,6 +43,7 @@ LightData DirectedLight::getLightData() const {
     
     data.type = this->type;
     data.energy = this->energy;
+    data.shadow = this->shadow;
     memcpy(data.color, this->color.data(), sizeof(data.color));
     memcpy(data.direction, this->direction.data(), sizeof(data.direction));
     

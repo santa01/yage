@@ -1,12 +1,11 @@
-#ifndef FRUSTUM_H
-#define	FRUSTUM_H
+#ifndef PERSPECTIVEPROJECTION_H
+#define	PERSPECTIVEPROJECTION_H
 
-#include "Mat4.h"
+#include "Projection.h"
 
-class Frustum {
+class PerspectiveProjection: public Projection {
     public:
-        Frustum();
-        virtual ~Frustum();
+        PerspectiveProjection();
         
         void setNearPlane(float nearPlane);
         float getNearPlane() const {
@@ -27,13 +26,8 @@ class Frustum {
         float getAspectRatio() const {
             return this->aspectRatio;
         }
-        
-        const Mat4& getPerspectiveMatrix() const {
-            return this->perspective;
-        }
 
-    protected:
-        Mat4 perspective;
+    protected:        
         float aspectRatio;
         float nearPlane;
         float farPlane;
@@ -43,4 +37,4 @@ class Frustum {
         void updateFieldOfView();
 };
 
-#endif	/* FRUSTUM_H */
+#endif	/* PERSPECTIVEPROJECTION_H */

@@ -55,13 +55,13 @@ Quaternion Quaternion::operator *(const Quaternion& quaternion) const {
     return result;
 }
 
-void Quaternion::normalize() {
+Quaternion& Quaternion::normalize() {
     float length = this->length();
-
     this->vector[Quaternion::X] /= length;
     this->vector[Quaternion::Y] /= length;
     this->vector[Quaternion::Z] /= length;
     this->vector[Quaternion::W] /= length;
+    return *this;
 }
 
 float Quaternion::length() const {

@@ -37,6 +37,7 @@ void SpotLight::rotate(const Vec3& vector, float angle) {
     q.normalize();
     
     this->direction = q.extractMat4().extractMat3() * this->direction;
+    this->setValid(false);
 }
 
 LightData SpotLight::getLightData() const {
@@ -48,6 +49,7 @@ LightData SpotLight::getLightData() const {
     data.size = this->size;
     data.falloff = this->falloff;
     data.blend = this->blend;
+    data.shadow = this->shadow;
     memcpy(data.color, this->color.data(), sizeof(data.color));
     memcpy(data.position, this->position.data(), sizeof(data.position));
     memcpy(data.direction, this->direction.data(), sizeof(data.direction));

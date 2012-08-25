@@ -4,11 +4,19 @@
 +--------+--------+--------+--------+
 | version|          padding         |
 +--------+--------+--------+--------+   <-- Material parameters
+|           casts shadow            |
++--------+--------+--------+--------+
+|          receives shadow          |
++--------+--------+--------+--------+
 |         diffuse intensity         |
 +--------+--------+--------+--------+
 |         specular intensity        |
 +--------+--------+--------+--------+
 |         specular hardness         |
++--------+--------+--------+--------+
+
+ ~ repeat 3 last fields 1-16 times ~
+
 +--------+--------+--------+--------+   <-- Data offsets
 |  vertex coordinates data offset   |
 +--------+--------+--------+--------+
@@ -45,16 +53,18 @@ Fileds:
   1. magic number                   (4 bytes) - 4D 45 53 48 bytes sequence ("MESH" string)
   2. version                        (1 bytes) - mesh version
   3. padding                        (3 bytes) - should be zeros
-  4. diffuse intensity              (4 bytes)
-  5. specular intensity             (4 bytes)
-  6. specular hardness              (4 bytes)
-  7. vertex coordinates data offset (4 bytes)
-  8. vertex normals data offset     (4 bytes)
-  9. uv coordinates data offset     (4 bytes)
- 10. vertex tangents data offset    (4 bytes)
- 11. faces data offset              (4 bytes)
- 12. vertex coordinates data        (variable length) - single precision floating point triples (x, y, z)
- 13. vertex normals data            (variable length) - single precision floating point triples (x, y, z)
- 14. uv coordinates data            (variable length) - single precision floating point tuples (u, v)
- 15. vertex tandents data           (variable length) - single precision floating point triples (x, y, z)
- 16. faces data                     (variable length) - 4 byte triples (vertex indexes)
+  4. casts shadow                   (1 byte)
+  5. receives shadow                (1 byte)
+  6. diffuse intensity              (4 bytes)
+  7. specular intensity             (4 bytes)
+  8. specular hardness              (4 bytes)
+  9. vertex coordinates data offset (4 bytes)
+ 10. vertex normals data offset     (4 bytes)
+ 11. uv coordinates data offset     (4 bytes)
+ 12. vertex tangents data offset    (4 bytes)
+ 13. faces data offset              (4 bytes)
+ 14. vertex coordinates data        (variable length) - single precision floating point triples (x, y, z)
+ 15. vertex normals data            (variable length) - single precision floating point triples (x, y, z)
+ 16. uv coordinates data            (variable length) - single precision floating point tuples (u, v)
+ 17. vertex tandents data           (variable length) - single precision floating point triples (x, y, z)
+ 18. faces data                     (variable length) - 4 byte triples (vertex indexes)

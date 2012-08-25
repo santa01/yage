@@ -23,6 +23,11 @@ void RenderEffect::setMVMatrix(const Mat4& mvMatrix) {
     glUniformMatrix4fv(this->mv, 1, GL_TRUE, (GLfloat*)mvMatrix.data());
 }
 
+void RenderEffect::setLightMVPMatrix(const Mat4& lightSpaceMvpMatrix) {
+    this->enable();
+    glUniformMatrix4fv(this->lightSpaceMvp, 1, GL_TRUE, (GLfloat*)lightSpaceMvpMatrix.data());
+}
+
 void RenderEffect::setCameraPosition(const Vec3& cameraPosition) {
     this->enable();
     glUniform3fv(this->cameraPosition, 1, cameraPosition.data());
@@ -57,7 +62,11 @@ void RenderEffect::enable() {
 
         this->mvp = glGetUniformLocation(this->program, "mvp");
         this->mv = glGetUniformLocation(this->program, "mv");
+        this->lightSpaceMvp = glGetUniformLocation(this->program, "lightSpaceMvp");
         this->cameraPosition = glGetUniformLocation(this->program, "cameraPosition");
+        
+        GLint shadowSampler = glGetUniformLocation(this->program, "shadowMapSamplers[0]");
+        glUniform1i(shadowSampler, 2);
 
         this->textureSampler = glGetUniformLocation(this->program, "textureSampler");
         glUniform1i(this->textureSampler, RenderEffect::DIFFUSE_TEXTURE_UNIT);

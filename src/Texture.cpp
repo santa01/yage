@@ -7,8 +7,8 @@ Texture::Texture() {
     glGenTextures(1, &this->texture);
 
     glGenSamplers(1, &this->sampler);
-    glSamplerParameterf(this->sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glSamplerParameterf(this->sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameterf(this->sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameterf(this->sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 Texture::~Texture() {
