@@ -1,4 +1,5 @@
 #include <memory.h>
+#include <sstream>
 
 #include "RenderEffect.h"
 #include "ShaderLoader.h"
@@ -7,25 +8,30 @@
 RenderEffect::RenderEffect() {
     this->program = 0;
     
-    this->mvp = 0;
-    this->mv = 0;
+    this->modelViewPerspectiveMatrix = 0;
+    this->localWorldMatrix = 0;
+    
     this->cameraPosition = 0;
-    this->textureSampler = 0;
+    this->diffuseTextureSampler = 0;
 }
 
-void RenderEffect::setMVPMatrix(const Mat4& mvpMatrix) {
+void RenderEffect::setModelViewPerspectiveMatrix(const Mat4& matrix) {
     this->enable();
-    glUniformMatrix4fv(this->mvp, 1, GL_TRUE, (GLfloat*)mvpMatrix.data());
+    glUniformMatrix4fv(this->modelViewPerspectiveMatrix, 1, GL_TRUE, (GLfloat*)matrix.data());
 }
 
-void RenderEffect::setMVMatrix(const Mat4& mvMatrix) {
+void RenderEffect::setLocalWorldMatrix(const Mat4& matrix) {
     this->enable();
-    glUniformMatrix4fv(this->mv, 1, GL_TRUE, (GLfloat*)mvMatrix.data());
+    glUniformMatrix4fv(this->localWorldMatrix, 1, GL_TRUE, (GLfloat*)matrix.data());
 }
 
-void RenderEffect::setLightMVPMatrix(const Mat4& lightSpaceMvpMatrix) {
+void RenderEffect::setLightModelViewPerspectiveMatrix(int lightIndex, const Mat4& matrix) {
+    std::stringstream builder;
+    builder << "lightModelViewPerspectiveMatrices[" << lightIndex << "]";
+
     this->enable();
-    glUniformMatrix4fv(this->lightSpaceMvp, 1, GL_TRUE, (GLfloat*)lightSpaceMvpMatrix.data());
+    GLint lightModelViewPerspectiveMatrix = glGetUniformLocation(this->program, builder.str().c_str());
+    glUniformMatrix4fv(lightModelViewPerspectiveMatrix, 1, GL_TRUE, (GLfloat*)matrix.data());
 }
 
 void RenderEffect::setCameraPosition(const Vec3& cameraPosition) {
@@ -60,16 +66,12 @@ void RenderEffect::enable() {
         
         glUseProgram(this->program);
 
-        this->mvp = glGetUniformLocation(this->program, "mvp");
-        this->mv = glGetUniformLocation(this->program, "mv");
-        this->lightSpaceMvp = glGetUniformLocation(this->program, "lightSpaceMvp");
-        this->cameraPosition = glGetUniformLocation(this->program, "cameraPosition");
-        
-        GLint shadowSampler = glGetUniformLocation(this->program, "shadowMapSamplers[0]");
-        glUniform1i(shadowSampler, 2);
+        this->modelViewPerspectiveMatrix = glGetUniformLocation(this->program, "modelViewPerspectiveMatrix");
+        this->localWorldMatrix = glGetUniformLocation(this->program, "localWorldMatrix");
 
-        this->textureSampler = glGetUniformLocation(this->program, "textureSampler");
-        glUniform1i(this->textureSampler, RenderEffect::DIFFUSE_TEXTURE_UNIT);
+        this->cameraPosition = glGetUniformLocation(this->program, "cameraPosition");
+        this->diffuseTextureSampler = glGetUniformLocation(this->program, "diffuseTextureSampler");
+        glUniform1i(this->diffuseTextureSampler, RenderEffect::DIFFUSE_TEXTURE_UNIT);
 
         GLuint materialParameters = glGetUniformBlockIndex(this->program, "MaterialParameters");
         GLuint ambientLightIndex = glGetUniformBlockIndex(this->program, "AmbientLight");

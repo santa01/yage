@@ -7,9 +7,7 @@
 #include "Renderable.h"
 #include "Texture.h"
 #include "Logger.h"
-#include "PerspectiveProjection.h"
 #include "configuration.h"
-#include "SpotLight.h"
 
 Scene::Scene():
         ambientLightColor(1.0f, 1.0f, 1.0f) {
@@ -82,14 +80,6 @@ void Scene::addRenderable(Renderable* entity) {
 void Scene::addLight(Light* light) {
     if (this->lights.size() < Scene::MAX_LIGHTS) {
         this->lights.push_back(light);
-        
-        int lightsCount = this->lights.size();
-        LightData data = light->getLightData();
-        
-        glBindBuffer(GL_UNIFORM_BUFFER, this->buffers[Scene::LIGHT_SOURCES_BUFFER]);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(lightsCount), &lightsCount);
-        glBufferSubData(GL_UNIFORM_BUFFER, 16 + sizeof(data) * --lightsCount, sizeof(data), &data);
-        glBindBuffer(GL_UNIFORM_BUFFER, 0);
     } else {
         Logger::getInstance().log(Logger::LOG_WARNING, "Maximum light sources count %d reached",
                 Scene::MAX_LIGHTS);
@@ -99,7 +89,6 @@ void Scene::addLight(Light* light) {
 void Scene::render() {
     this->validateLightSources();
     this->shadowRenderPass();
-    this->depthBuffer.bindShadowMap(2);
     this->normalRenderPass();
 }
 
@@ -117,29 +106,43 @@ void Scene::updateAmbientLightBuffer() {
 }
 
 void Scene::validateLightSources() {
-    std::vector<Light*>::const_iterator light;
-    int lightIndex = 0;
-    for (light = this->lights.begin(); light != this->lights.end(); light++) {
-        Light* currentLight = *light;
-        
-        if (!currentLight->isValid()) {
-            LightData data = currentLight->getLightData();
+    bool hasNewLight = false;
 
-            glBindBuffer(GL_UNIFORM_BUFFER, this->buffers[Scene::LIGHT_SOURCES_BUFFER]);
-            glBufferSubData(GL_UNIFORM_BUFFER, 16 + sizeof(data) * lightIndex, sizeof(data), &data);
-            glBindBuffer(GL_UNIFORM_BUFFER, 0);
-            
+    glBindBuffer(GL_UNIFORM_BUFFER, this->buffers[Scene::LIGHT_SOURCES_BUFFER]);
+    
+    int lightIndex = 0;
+    std::vector<Light*>::const_iterator light;
+
+    for (light = this->lights.begin(); light != this->lights.end(); light++, lightIndex++) {
+        Light* currentLight = *light;
+        if (currentLight->isValid() && !currentLight->isRaw()) {
+            continue;
+        }
+
+        LightData data = currentLight->getLightData();
+        if (!currentLight->isValid()) { 
             currentLight->setValid(true);
         }
+        if (currentLight->isRaw()) {
+            currentLight->setRaw(false);
+            hasNewLight = true;
+        }
         
-        lightIndex++;
+        glBufferSubData(GL_UNIFORM_BUFFER, 16 + sizeof(data) * lightIndex, sizeof(data), &data);
     }
+    
+    if (hasNewLight) {
+        int lightsCount = this->lights.size();
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(lightsCount), &lightsCount);
+    }
+    
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Scene::normalRenderPass() {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, WIDTH, HEIGHT);
     
     std::vector<Renderable*>::const_iterator renderable;
     for (renderable = this->renderables.begin(); renderable != this->renderables.end(); renderable++) {
@@ -147,7 +150,7 @@ void Scene::normalRenderPass() {
         RenderEffect* currentEffect = currentRenderable->getEffect();
         
         if (currentEffect != NULL) {
-            currentEffect->setMVPMatrix(
+            currentEffect->setModelViewPerspectiveMatrix(
                     this->camera.getProjection()->getProjectionMatrix() *
                     this->camera.getRotationMatrix() *
                     this->camera.getTranslationMatrix());
@@ -164,31 +167,35 @@ void Scene::normalRenderPass() {
 void Scene::shadowRenderPass() {
     this->depthBuffer.attach();
 
-    glClear(GL_DEPTH_BUFFER_BIT);
-    glViewport(0, 0, 1024, 1024);
-
     Vec3 oldPos = this->camera.getPosition();
-    Vec3 oldTarget = -this->camera.getTargetVector();
+    Vec3 oldTarget = this->camera.getTargetVector();
+    Projection* oldProjection = this->camera.getProjection();
     
+    int lightIndex = 0;
     std::vector<Light*>::const_iterator light;
-    for (light = this->lights.begin(); light != this->lights.end(); light++) {
+
+    for (light = this->lights.begin(); light != this->lights.end(); light++, lightIndex++) {
         Light* currentLight = *light;
         
         if (currentLight->isShadow()) {
-            switch (currentLight->getType()) {
-                case Light::TYPE_SPOT:
-                    SpotLight* spotLight = (SpotLight*)currentLight;
-                    this->camera.setPosition(spotLight->getPosition());
-                    this->camera.lookAt(spotLight->getDirection());
-                    PerspectiveProjection* proj = (PerspectiveProjection*)this->camera.getProjection();
-                    proj->setFov(spotLight->getSize());
-                    proj->setAspectRatio(1.0f);
+            int shadowDimention = currentLight->getShadowMap().getDimention();
+            glViewport(0, 0, shadowDimention, shadowDimention);
+            
+            if (currentLight->getType() == Light::TYPE_POINT) {
+                // TODO
+            } else {
+                this->camera.setProjection(currentLight->getShadowProjection());
+                this->camera.setPosition(currentLight->getPosition());
+                this->camera.lookAt(-currentLight->getDirection());
+                this->depthBuffer.bindTexture(currentLight->getShadowMap());
             }
             
-            this->shadowMapEffect->setMVPMatrix(
+            this->shadowMapEffect->setModelViewPerspectiveMatrix(
                     this->camera.getProjection()->getProjectionMatrix() *
                     this->camera.getRotationMatrix() *
                     this->camera.getTranslationMatrix());
+            
+            glClear(GL_DEPTH_BUFFER_BIT);
             
             std::vector<Renderable*>::const_iterator renderable;
             for (renderable = this->renderables.begin(); renderable != this->renderables.end(); renderable++) {
@@ -196,22 +203,22 @@ void Scene::shadowRenderPass() {
                 
                 if (currentRenderable->isCastsShadow()) {
                     RenderEffect* oldEffect = currentRenderable->getEffect();
-                    oldEffect->setLightMVPMatrix(
-                        this->camera.getProjection()->getProjectionMatrix() *
-                        this->camera.getRotationMatrix() *
-                        this->camera.getTranslationMatrix());
+                    oldEffect->setLightModelViewPerspectiveMatrix(lightIndex,
+                            this->camera.getProjection()->getProjectionMatrix() *
+                            this->camera.getRotationMatrix() *
+                            this->camera.getTranslationMatrix());
 
                     currentRenderable->setEffect(this->shadowMapEffect);
                     currentRenderable->render();
                     currentRenderable->setEffect(oldEffect);
                 }
             }
+            
+            currentLight->getShadowMap().bind(lightIndex);
         }
     }
 
-    this->camera.setPosition(oldPos);
+    this->camera.setProjection(oldProjection);
     this->camera.lookAt(oldTarget);
-    PerspectiveProjection* proj = (PerspectiveProjection*)this->camera.getProjection();
-    proj->setFov(FOV);
-    proj->setAspectRatio(1.3333f);
+    this->camera.setPosition(oldPos);
 }

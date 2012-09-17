@@ -3,21 +3,21 @@
 
 #include <GL/gl.h>
 
+#include "Texture.h"
+
 class FrameBuffer {
     public:
         FrameBuffer();
         ~FrameBuffer();
         
         void attach();
-        void bindShadowMap(int target);
+        void bindTexture(const Texture& texture);
   
     private:
         FrameBuffer(const FrameBuffer&);
         FrameBuffer& operator =(const FrameBuffer&);
         
         GLuint fbo;
-        GLuint shadowMapTexture;
-        GLuint shadowMapSampler;
 };
 
 #endif	/* FRAMEBUFFER_H */

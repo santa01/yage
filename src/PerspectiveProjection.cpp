@@ -37,14 +37,14 @@ void PerspectiveProjection::setAspectRatio(float aspectRatio) {
 }
 
 void PerspectiveProjection::updateClipDistances() {
-    this->projection.set(2, 2, (this->farPlane + this->nearPlane) /
-                                (this->farPlane - this->nearPlane));
-    this->projection.set(2, 3, (2 * this->farPlane * this->nearPlane) /
-                                (this->farPlane - this->nearPlane));
+    this->projection.set(2, 2, (-this->farPlane - this->nearPlane) /
+                               (this->farPlane - this->nearPlane));
+    this->projection.set(2, 3, (-2.0f * this->farPlane * this->nearPlane) /
+                               (this->farPlane - this->nearPlane));
 }
 
 void PerspectiveProjection::updateFieldOfView() {
     this->projection.set(0, 0, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f) *
-                                this->aspectRatio));
+                               this->aspectRatio));
     this->projection.set(1, 1, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f)));
 }

@@ -8,6 +8,7 @@
 #define FOV             70
 #define ANISOTROPY      8
 #define MSAA            0
+#define SHADOW          1024
 
 #define VERBOSE         2       // 0 - error, 1 - warning, 2 - info
 

@@ -54,6 +54,7 @@ class Camera: public Movable, public Rotatable {
 
     private:
         void updateRotationMatrix(const Vec3& right, const Vec3& up, const Vec3& target);
+        void initialize();
         
         Projection* projection;
         Mat4 translationMatrix;

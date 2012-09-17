@@ -6,7 +6,7 @@
 #include "Logger.h"
 #include "RenderEffect.h"
 #include "TGAImage.h"
-#include "Texture.h"
+#include "ImageTexture.h"
 #include "Mesh.h"
 #include "Renderable.h"
 #include "Scene.h"
@@ -56,7 +56,7 @@ void Renderer::onInit() {
     TGAImage image;
     image.load("textures/metal.tga");
 
-    Texture* texture = new Texture();
+    ImageTexture* texture = new ImageTexture();
     texture->load(image);
     
     RenderEffect* effect = new RenderEffect();
@@ -93,12 +93,24 @@ void Renderer::onInit() {
     
     SpotLight* light2 = new SpotLight();
     light2->setPosition(3.0f, 3.0f, 0.0f);
-    light2->setSize(45.0f);
+    light2->setSize(60.0f);
     light2->pitch(10.0f);
     light2->roll(5.0f);
     this->scene->addLight(light2);
     
-    this->scene->setAmbientLightIntensity(0.2f);
+    DirectedLight* light3 = new DirectedLight();
+    light3->setDirection(0.0f, -5.0f, 5.0f);
+    light3->setEnergy(0.1f);
+    light3->getShadowMap().setDimention(1024);
+    this->scene->addLight(light3);
+    
+    DirectedLight* light4 = new DirectedLight();
+    light4->setDirection(-5.0f, -5.0f, 5.0f);
+    light4->setEnergy(0.1f);
+    light4->getShadowMap().setDimention(1024);
+    this->scene->addLight(light4);
+    
+    this->scene->setAmbientLightIntensity(0.0f);
     this->scene->getCamera().setPosition(1.5f, 1.5f, -5.0f);
     this->scene->getCamera().setAspectRatio((float)this->width / this->height);
 

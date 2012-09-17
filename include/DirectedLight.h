@@ -2,37 +2,23 @@
 #define	DIRECTEDLIGHT_H
 
 #include "Light.h"
-#include "Rotatable.h"
 #include "Vec3.h"
+#include "Projection.h"
+#include "OrthographicProjection.h"
 
-class DirectedLight: public Light, public Rotatable {
+class DirectedLight: public Light {
     public:
         DirectedLight();
         ~DirectedLight();
         
-        float getXAngle() const;
-        float getYAngle() const;
-        float getZAngle() const;
+        Projection* getShadowProjection() const {
+            return this->shadowProjection;
+        }
 
-        void rotate(const Vec3& vector, float angle);
-        
         LightData getLightData() const;
-        
-        void setDirection(float x, float y, float z) {
-            this->setDirection(Vec3(x, y, z));
-        }
-        
-        void setDirection(const Vec3& direction) {
-            this->direction = direction;
-            this->setValid(false);
-        }
-        
-        const Vec3& getDirection() const {
-            return this->direction;
-        }
 
     private:
-        Vec3 direction;
+        OrthographicProjection* shadowProjection;
 };
 
 #endif	/* DIRECTEDLIGHT_H */

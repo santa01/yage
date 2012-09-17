@@ -14,13 +14,13 @@ Mesh::Mesh() {
 }
 
 Mesh::Mesh(float x, float y, float z) {
-    this->setPosition(x, y, z);
     this->initialize();
+    this->setPosition(x, y, z);
 }
 
 Mesh::Mesh(const Vec3& position) {
-    this->setPosition(position);
     this->initialize();
+    this->setPosition(position);
 }
 
 Mesh::~Mesh() {
@@ -169,9 +169,9 @@ void Mesh::render() {
     if (this->effect != NULL) {
         this->effect->enable();
         this->effect->setMaterial(this->buffers[Mesh::MATERIAL_BUFFER]);
-        this->effect->setMVMatrix(this->translationMatrix *
-                                  this->rotationMatrix *
-                                  this->scalingMatrix);
+        this->effect->setLocalWorldMatrix(this->translationMatrix *
+                                          this->rotationMatrix *
+                                          this->scalingMatrix);
     }
 
     glBindVertexArray(this->vao);

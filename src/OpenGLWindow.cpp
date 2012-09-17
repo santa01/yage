@@ -14,6 +14,7 @@
 #include "configuration.h"
 
 OpenGLWindow::OpenGLWindow() {
+    this->initialize();
     this->width = 640;
     this->height = 480;
     this->toggleFullScreenRequest = false;
@@ -23,6 +24,7 @@ OpenGLWindow::OpenGLWindow() {
 
 OpenGLWindow::OpenGLWindow(int width, int height, const std::string& caption, bool fullScreen):
         caption(caption) {
+    this->initialize();
     this->width = width;
     this->height = height;
     this->toggleFullScreenRequest = fullScreen;

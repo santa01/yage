@@ -9,17 +9,17 @@
 #include "PerspectiveProjection.h"
 
 Camera::Camera() {
-    this->projection = new PerspectiveProjection();
+    this->initialize();
 }
 
 Camera::Camera(float x, float y, float z) {
+    this->initialize();
     this->setPosition(x, y, z);
-    this->projection = new PerspectiveProjection();
 }
 
 Camera::Camera(const Vec3& position) {
+    this->initialize();
     this->setPosition(position);
-    this->projection = new PerspectiveProjection();
 }
 
 Camera::~Camera() {
@@ -104,7 +104,7 @@ void Camera::lookAt(float x, float y, float z) {
 }
 
 void Camera::lookAt(const Vec3& vector) {
-    Vec3 target(-vector);
+    Vec3 target(vector);
     target.normalize();
     
     Vec3 baseUp(0.0f, 1.0f, 0.0f);
@@ -129,4 +129,9 @@ void Camera::updateRotationMatrix(const Vec3& right, const Vec3& up, const Vec3&
     this->rotationMatrix.set(2, 0, target.get(Vec3::X));
     this->rotationMatrix.set(2, 1, target.get(Vec3::Y));
     this->rotationMatrix.set(2, 2, target.get(Vec3::Z));
+}
+
+void Camera::initialize() {
+    this->lookAt(0.0f, 0.0f, -1.0f);
+    this->projection = new PerspectiveProjection();
 }

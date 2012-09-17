@@ -53,13 +53,13 @@ class OpenGLWindow {
         virtual void onInit() = 0;
         virtual void onCleanup() = 0;
         virtual void onIdle() = 0;
-
+        
+    private:
         std::string caption;
         int width;
         int height;
         bool fullScreen;
         
-    private:
         Window window, rootWindow;
         Display *display;
         GLXContext glxContext;
@@ -88,7 +88,6 @@ class OpenGLWindow {
         OpenGLWindow& operator =(const OpenGLWindow&);
 
         void initialize();
-        
         void initWindow();
         void destroyWindow();
 

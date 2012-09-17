@@ -1,11 +1,11 @@
-#ifndef PERSPECTIVEPROJECTION_H
-#define	PERSPECTIVEPROJECTION_H
+#ifndef ORTHOGRAPHICPROJECTION_H
+#define	ORTHOGRAPHICPROJECTION_H
 
 #include "Projection.h"
 
-class PerspectiveProjection: public Projection {
+class OrthographicProjection: public Projection {
     public:
-        PerspectiveProjection();
+        OrthographicProjection();
         
         void setNearPlane(float nearPlane);
         float getNearPlane() const {
@@ -16,25 +16,18 @@ class PerspectiveProjection: public Projection {
         float getFarPlane() const {
             return this->farPlane;
         }
-
-        void setFov(float fov);
-        float getFov() const {
-            return this->fov;
-        }
         
         void setAspectRatio(float aspectRatio);
         float getAspectRatio() const {
             return this->aspectRatio;
         }
-
-    protected:
-        void updateClipDistances();
-        void updateFieldOfView();
+        
+    private:
+        void updatePerspectiveMatrix();
         
         float aspectRatio;
         float nearPlane;
         float farPlane;
-        float fov;
 };
 
-#endif	/* PERSPECTIVEPROJECTION_H */
+#endif	/* ORTHOGRAPHICPROJECTION_H */

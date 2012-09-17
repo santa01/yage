@@ -3,7 +3,7 @@
 #define MAX_LIGHTS          12
 #define MAX_MATERIALS       16
 #define M_PI                3.14159265358979323846
-#define BIAS                0.00001
+#define BIAS                0.0002
 
 #define TYPE_DIRECTED       0
 #define TYPE_POINT          1
@@ -57,14 +57,14 @@ uniform sampler2D shadowMapSamplers[MAX_LIGHTS];
 smooth in vec3 fragmentPosition;
 smooth in vec3 fragmentNormal;
 smooth in vec2 fragmentUv;
-smooth in vec4 lightSpaceFragmentPosition;
+smooth in vec4 lightSpaceFragmentPositions[MAX_LIGHTS];
 
 out vec4 fragmentColor;
 
-const mat4 normalizedToUvMatrix = mat4(0.5f, 0.0f, 0.0f, 0.0f,
-                                       0.0f, 0.5f, 0.0f, 0.0f,
-                                       0.0f, 0.0f, 0.5f, 0.0f,
-                                       0.5f, 0.5f, 0.5f, 1.0f);
+const mat4 normalizedUvMatrix = mat4(0.5f, 0.0f, 0.0f, 0.0f,
+                                     0.0f, 0.5f, 0.0f, 0.0f,
+                                     0.0f, 0.0f, 0.5f, 0.0f,
+                                     0.5f, 0.5f, 0.5f, 1.0f);
 
 vec3 getLightDirection(in LightSource lightSource) {
     switch (lightSource.type) {
@@ -110,18 +110,18 @@ float getSpotFactor(in LightSource lightSource) {
     }
 }
 
-float getShadowFactor(in LightSource lightSource) {
+float getShadowFactor(in LightSource lightSource, in vec4 lightSpaceFragmentPosition, in sampler2D shadowMapSampler) {
     if (lightSource.shadow) {
         switch (lightSource.type) {
             case TYPE_POINT:
+                return 1.0f;
             case TYPE_DIRECTED:
-                return 0.0f;
             case TYPE_SPOT:
-                vec4 ndcLightSpaceFragmentPosition = lightSpaceFragmentPosition / lightSpaceFragmentPosition.w;
-                vec3 occludeFragmentPosition = (normalizedToUvMatrix * ndcLightSpaceFragmentPosition).xyz;
-                float shadowMapDepth = texture(shadowMapSamplers[0], occludeFragmentPosition.st);
+                vec4 lightSpaceNDCFragmentPosition = lightSpaceFragmentPosition / lightSpaceFragmentPosition.w;
+                vec3 lightSpaceOccludeFragmentPosition = (normalizedUvMatrix * lightSpaceNDCFragmentPosition).xyz;
+                float shadowMapDepth = texture(shadowMapSampler, lightSpaceOccludeFragmentPosition.st);
 
-                if (occludeFragmentPosition.z + BIAS < shadowMapDepth) {
+                if (lightSpaceOccludeFragmentPosition.z - BIAS > shadowMapDepth) {
                     return 0.0f;
                 }
         }
@@ -140,34 +140,36 @@ void main() {
     vec4 lightColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
     for (int i = 0; i < light.sourcesCount; i++) {
-        vec4 diffuseColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-        vec4 specularColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+        float shadowFactor = getShadowFactor(light.sources[i], lightSpaceFragmentPositions[i], shadowMapSamplers[i]);
+        if (shadowFactor > 0.0f) {
+            vec4 diffuseColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+            vec4 specularColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-        vec3 direction = getLightDirection(light.sources[i]);
-        float diffuseFactor = dot(normal, -direction);
-        float spotFactor = getSpotFactor(light.sources[i]);
-        float shadowFactor = getShadowFactor(light.sources[i]);
+            vec3 direction = getLightDirection(light.sources[i]);
+            float diffuseFactor = dot(normal, -direction);
+            float spotFactor = getSpotFactor(light.sources[i]);
 
-        if (diffuseFactor > 0) {
-            float attenuation = getLightAttenuation(light.sources[i]);
-            diffuseColor = vec4(light.sources[i].color, 1.0f) *
-                           light.sources[i].energy * attenuation *
-                           materialParameters.materials[0].diffuseIntensity *
-                           diffuseFactor;
+            if (diffuseFactor > 0) {
+                float attenuation = getLightAttenuation(light.sources[i]);
+                diffuseColor = vec4(light.sources[i].color, 1.0f) *
+                               light.sources[i].energy * attenuation *
+                               materialParameters.materials[0].diffuseIntensity *
+                               diffuseFactor;
 
-            vec3 viewerDirection = normalize(cameraPosition - fragmentPosition);
-            vec3 reflectionDirection = normalize(reflect(direction, normal));
-            float specularFactor = dot(viewerDirection, reflectionDirection);
-            
-            if (specularFactor > 0) {
-                specularColor = vec4(light.sources[i].color, 1.0f) *
-                                light.sources[i].energy * attenuation *
-                                materialParameters.materials[0].specularIntensity *
-                                pow(specularFactor, materialParameters.materials[0].specularExponent);
+                vec3 viewerDirection = normalize(cameraPosition - fragmentPosition);
+                vec3 reflectionDirection = normalize(reflect(direction, normal));
+                float specularFactor = dot(viewerDirection, reflectionDirection);
+
+                if (specularFactor > 0) {
+                    specularColor = vec4(light.sources[i].color, 1.0f) *
+                                    light.sources[i].energy * attenuation *
+                                    materialParameters.materials[0].specularIntensity *
+                                    pow(specularFactor, materialParameters.materials[0].specularExponent);
+                }
             }
-        }
 
-        lightColor += (diffuseColor + specularColor) * spotFactor * shadowFactor;
+            lightColor += (diffuseColor + specularColor) * spotFactor;
+        }
     }
 
     fragmentColor = diffuseTextureColor * (ambientColor + lightColor);

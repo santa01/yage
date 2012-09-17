@@ -1,10 +1,12 @@
 #version 330
 
-uniform mat4 mvp;
-uniform mat4 mv;
+uniform mat4 modelViewPerspectiveMatrix;
+uniform mat4 localWorldMatrix;
 
 layout(location = 0) in vec3 vertexPosition;
 
 void main () {
-    gl_Position = mvp * mv * vec4(vertexPosition, 1.0f);
+    gl_Position = modelViewPerspectiveMatrix *
+                  localWorldMatrix *
+                  vec4(vertexPosition, 1.0f);
 }
