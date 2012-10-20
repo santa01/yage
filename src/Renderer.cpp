@@ -60,9 +60,9 @@ void Renderer::onInit() {
     texture->load(image);
     
     RenderEffect* effect = new RenderEffect();
-    effect->setName("illumination");
-    effect->attachShader("shaders/mvp_transform.vs");
-    effect->attachShader("shaders/lambert_phong_shading.fs");
+    effect->setName("generic_illumination");
+    effect->attachShader("shaders/generic_illumination.vs");
+    effect->attachShader("shaders/generic_illumination.fs");
     
     Mesh* mesh = new Mesh();
     if (mesh->load("meshes/cube.mesh")) {
@@ -71,6 +71,17 @@ void Renderer::onInit() {
         mesh->setEffect(effect);
         mesh->scale(10.0f);
         mesh->scaleY(0.01f);
+        this->scene->addRenderable(mesh);
+    }
+    
+    mesh = new Mesh();
+    if (mesh->load("meshes/cube.mesh")) {
+        mesh->setName("cube4");
+        mesh->setDiffuseTexture(texture);
+        mesh->setEffect(effect);
+        mesh->scale(10.0f);
+        mesh->scaleZ(0.01f);
+        mesh->setPosition(0.0f, 5.0f, 8.0f);
         this->scene->addRenderable(mesh);
     }
     
@@ -85,29 +96,51 @@ void Renderer::onInit() {
         this->scene->addRenderable(mesh);
     }
 
+    mesh = new Mesh();
+    if (mesh->load("meshes/cube.mesh")) {
+        mesh->setName("cube2");
+        mesh->setDiffuseTexture(texture);
+        mesh->setEffect(effect);
+        mesh->setPosition(3.0f, 2.0f, 4.0f);
+        mesh->roll(20.0f);
+        mesh->setCastsShadow(true);
+        this->scene->addRenderable(mesh);
+    }
+    
+    mesh = new Mesh();
+    if (mesh->load("meshes/cube.mesh")) {
+        mesh->setName("cube3");
+        mesh->setDiffuseTexture(texture);
+        mesh->setEffect(effect);
+        mesh->setPosition(0.0f, 0.0f, 2.0f);
+        mesh->roll(85.0f);
+        mesh->yaw(30.0f);
+        mesh->setCastsShadow(true);
+        this->scene->addRenderable(mesh);
+    }
+    
     PointLight* light1 = new PointLight();
-    light1->setPosition(5.0f, 5.0f, -5.0f);
-    light1->setEnergy(3.0f);
+    light1->setPosition(1.0f, 3.0f, 1.0f);
+    light1->setEnergy(2.0f);
     light1->setFalloff(10.0f);
+    //light1->setShadow(false);
     //this->scene->addLight(light1);
     
     SpotLight* light2 = new SpotLight();
-    light2->setPosition(3.0f, 3.0f, 0.0f);
-    light2->setSize(60.0f);
-    light2->pitch(10.0f);
-    light2->roll(5.0f);
+    light2->setPosition(2.0f, 4.0f, -4.0f);
+    light2->setSize(50.0f);
+    light2->pitch(-70.0f);
+    light2->setEnergy(2.0f);
     this->scene->addLight(light2);
     
     DirectedLight* light3 = new DirectedLight();
     light3->setDirection(0.0f, -5.0f, 5.0f);
     light3->setEnergy(0.1f);
-    light3->getShadowMap().setDimention(1024);
     this->scene->addLight(light3);
     
     DirectedLight* light4 = new DirectedLight();
     light4->setDirection(-5.0f, -5.0f, 5.0f);
     light4->setEnergy(0.1f);
-    light4->getShadowMap().setDimention(1024);
     this->scene->addLight(light4);
     
     this->scene->setAmbientLightIntensity(0.0f);

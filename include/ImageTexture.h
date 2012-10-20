@@ -7,8 +7,8 @@
 class ImageTexture: public Texture {
     public:
         ImageTexture();
-        
-        void setAnisotropyLevel(int anisotropyLevel);
+        ImageTexture(int anisotropyLevel);
+
         int getAnisotropyLevel() const {
             return this->anisotropyLevel;
         }
@@ -16,6 +16,8 @@ class ImageTexture: public Texture {
         bool load(const Image& image);
         
     private:
+        void initialize();
+        
         int anisotropyLevel;
 };
 

@@ -10,6 +10,8 @@ class Vec4 {
         static const int Z = 2;
         static const int W = 3;
 
+        static const Vec4 ZERO;
+        
         Vec4();
         Vec4(float x, float y, float z, float w);
 

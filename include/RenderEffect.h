@@ -11,8 +11,9 @@
 
 class RenderEffect {
     public:
-        static const int DIFFUSE_TEXTURE_UNIT = 15;
-        static const int SPECULAR_TEXTURE_UNIT = 16;
+        static const int MAX_LIGHTS = 24;
+        static const int DIFFUSE_TEXTURE_UNIT = 25;
+        static const int SPECULAR_TEXTURE_UNIT = 26;
         
         RenderEffect();
 
@@ -28,6 +29,7 @@ class RenderEffect {
         void setLocalWorldMatrix(const Mat4& matrix);
         void setLightModelViewPerspectiveMatrix(int lightIndex, const Mat4& matrix);
         
+        void setShadowMapSampler(int lightIndex, int textureUnit);
         void setCameraPosition(const Vec3& cameraPosition);
 
         void setMaterial(GLuint materialBuffer);
@@ -52,9 +54,10 @@ class RenderEffect {
         
         GLint modelViewPerspectiveMatrix;       // vertex shader
         GLint localWorldMatrix;                 // vertex shader
-
         GLint cameraPosition;                   // fragment shader
-        GLint diffuseTextureSampler;            // fragment shader
+
+        GLint lightModelViewPerspectiveMatrices[RenderEffect::MAX_LIGHTS];   // vertex shader
+        GLint shadowMapSamplers[RenderEffect::MAX_LIGHTS];                   // fragment shader
 };
 
 #endif	/* RENDEREFFECT_H */

@@ -57,13 +57,13 @@ class Scene {
         static const int AMBIENT_LIGHT_BUFFER = 0;
         static const int LIGHT_SOURCES_BUFFER = 1;
         
-        static const unsigned int MAX_LIGHTS = 12;
-        
         Scene(const Scene&);
         Scene& operator =(const Scene&);
         
         void updateAmbientLightBuffer();
         void validateLightSources();
+        void renderToShadowMap(Light* lightSource);
+        
         void normalRenderPass();
         void shadowRenderPass();
         

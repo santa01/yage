@@ -6,7 +6,7 @@
 #include "Vec3.h"
 #include "Mat4.h"
 #include "Projection.h"
-#include "ShadowMap.h"
+#include "Texture.h"
 #include "Rotatable.h"
 #include "Movable.h"
 
@@ -74,7 +74,7 @@ class Light: public Movable, public Rotatable {
         int getType() const {
             return this->type;
         }
-        
+
         void setName(const std::string& name) {
             this->name = name;
         }
@@ -90,10 +90,6 @@ class Light: public Movable, public Rotatable {
         
         const Vec3& getColor() const {
             return this->color;
-        }
-        
-        ShadowMap& getShadowMap() {
-            return this->shadowMap;
         }
         
         void setEnergy(float energy) {
@@ -132,13 +128,13 @@ class Light: public Movable, public Rotatable {
 
         virtual Projection* getShadowProjection() const = 0;
         virtual LightData getLightData() const = 0;
+        virtual Texture& getShadowMap() = 0;
         
     protected:
         std::string name;
         Vec3 color;
         Vec3 direction;
         Vec3 position;
-        ShadowMap shadowMap;
         
         int type;
         float energy;

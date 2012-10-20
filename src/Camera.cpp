@@ -56,6 +56,9 @@ float Camera::getZAngle() const {
 }
 
 void Camera::rotate(const Vec3& vector, float angle) {
+    if (vector == Vec3::ZERO)
+        return;
+    
     Vec3 axis(vector);
     Quaternion q(axis.normalize(), angle * M_PI / 180.0f);
     q.normalize();
@@ -104,12 +107,17 @@ void Camera::lookAt(float x, float y, float z) {
 }
 
 void Camera::lookAt(const Vec3& vector) {
+    if (vector == Vec3::ZERO)
+        return;
+    
     Vec3 target(vector);
     target.normalize();
-    
-    Vec3 baseUp(0.0f, 1.0f, 0.0f);
-    Vec3 right = target.cross(baseUp);
-    right.normalize();
+
+    Vec3 right = this->getRightVector();
+    if (target != Vec3::UNIT_Y && target != -Vec3::UNIT_Y) {
+        right = target.cross(Vec3::UNIT_Y);
+        right.normalize();  
+    }
     
     Vec3 up = right.cross(target);
     up.normalize();

@@ -2,6 +2,8 @@
 
 Texture::Texture() {
     glGenTextures(1, &this->texture);
+    this->width = 0;
+    this->height = 0;
 }
 
 Texture::~Texture() {

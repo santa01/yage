@@ -5,6 +5,8 @@
 #include "Vec3.h"
 #include "Projection.h"
 #include "OrthographicProjection.h"
+#include "ShadowMap.h"
+#include "Texture.h"
 
 class DirectedLight: public Light {
     public:
@@ -16,9 +18,14 @@ class DirectedLight: public Light {
         }
 
         LightData getLightData() const;
-
+        
+        Texture& getShadowMap() {
+            return this->shadowMap;
+        }
+        
     private:
         OrthographicProjection* shadowProjection;
+        ShadowMap shadowMap;
 };
 
 #endif	/* DIRECTEDLIGHT_H */

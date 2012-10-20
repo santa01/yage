@@ -10,8 +10,8 @@ class FrameBuffer {
         FrameBuffer();
         ~FrameBuffer();
         
-        void attach();
-        void bindTexture(const Texture& texture);
+        void bind();
+        void attachTexture(const Texture& texture);
   
     private:
         FrameBuffer(const FrameBuffer&);

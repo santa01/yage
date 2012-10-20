@@ -15,11 +15,11 @@ FrameBuffer::~FrameBuffer() {
     glDeleteFramebuffers(1, &this->fbo);
 }
 
-void FrameBuffer::attach() {
+void FrameBuffer::bind() {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->fbo);
 }
 
-void FrameBuffer::bindTexture(const Texture& texture) {
+void FrameBuffer::attachTexture(const Texture& texture) {
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
             GL_TEXTURE_2D, texture.getTextureHandle(), 0);
 }

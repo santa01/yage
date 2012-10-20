@@ -1,6 +1,6 @@
 #version 330
 
-#define MAX_LIGHTS          12
+#define MAX_LIGHTS          24
 #define MAX_MATERIALS       16
 #define M_PI                3.14159265358979323846
 #define BIAS                0.0002
@@ -66,33 +66,36 @@ const mat4 normalizedUvMatrix = mat4(0.5f, 0.0f, 0.0f, 0.0f,
                                      0.0f, 0.0f, 0.5f, 0.0f,
                                      0.5f, 0.5f, 0.5f, 1.0f);
 
-vec3 getLightDirection(in LightSource lightSource) {
-    switch (lightSource.type) {
+vec3 getLightDirection(in int lightIndex) {
+    LightSource lightSource = light.sources[lightIndex];
+
+    switch (light.sources[lightIndex].type) {
         case TYPE_POINT:
             return normalize(fragmentPosition - lightSource.position);
-        case TYPE_DIRECTED:
-        case TYPE_SPOT:
+        
+        default:
             return lightSource.direction;
     }
 }
 
-float getLightAttenuation(in LightSource lightSource) {
+float getLightAttenuation(in int lightIndex) {
+    LightSource lightSource = light.sources[lightIndex];
+
     switch (lightSource.type) {
         case TYPE_DIRECTED:
             return 1.0f;
-        case TYPE_POINT:
-        case TYPE_SPOT:
+        
+        default:
             float falloffSquare = pow(lightSource.falloff, 2);
             float distanceSquare = pow(distance(lightSource.position, fragmentPosition), 2);
             return falloffSquare / (falloffSquare + distanceSquare);
     }
 }
 
-float getSpotFactor(in LightSource lightSource) {
+float getSpotFactor(in int lightIndex) {
+    LightSource lightSource = light.sources[lightIndex];
+
     switch (lightSource.type) {
-        case TYPE_DIRECTED:
-        case TYPE_POINT:
-            return 1.0f;
         case TYPE_SPOT:
             float viewAngle = pow(dot(lightSource.direction, normalize(fragmentPosition - lightSource.position)), 2.0f);
             float maxAngle = pow(cos(lightSource.size * M_PI / 360.0f), 2.0f);
@@ -105,21 +108,26 @@ float getSpotFactor(in LightSource lightSource) {
             if (viewAngle < blendAngle) {
                 return (viewAngle - maxAngle) / (blendAngle - maxAngle);
             }
-
+            // no break, fall through
+        default:
             return 1.0f;
     }
 }
 
-float getShadowFactor(in LightSource lightSource, in vec4 lightSpaceFragmentPosition, in sampler2D shadowMapSampler) {
+float getShadowFactor(in int lightIndex) {
+    LightSource lightSource = light.sources[lightIndex];
+
     if (lightSource.shadow) {
         switch (lightSource.type) {
             case TYPE_POINT:
-                return 1.0f;
-            case TYPE_DIRECTED:
-            case TYPE_SPOT:
-                vec4 lightSpaceNDCFragmentPosition = lightSpaceFragmentPosition / lightSpaceFragmentPosition.w;
-                vec3 lightSpaceOccludeFragmentPosition = (normalizedUvMatrix * lightSpaceNDCFragmentPosition).xyz;
-                float shadowMapDepth = texture(shadowMapSampler, lightSpaceOccludeFragmentPosition.st);
+                break;
+
+            default:
+                vec4 lightSpaceFragmentPosition = lightSpaceFragmentPositions[lightIndex];
+                vec4 lightSpaceOccludeFragmentPosition = normalizedUvMatrix *
+                    (lightSpaceFragmentPosition / lightSpaceFragmentPosition.w);
+                float shadowMapDepth = texture(shadowMapSamplers[lightIndex],
+                                               lightSpaceOccludeFragmentPosition.st);
 
                 if (lightSpaceOccludeFragmentPosition.z - BIAS > shadowMapDepth) {
                     return 0.0f;
@@ -140,17 +148,17 @@ void main() {
     vec4 lightColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
     for (int i = 0; i < light.sourcesCount; i++) {
-        float shadowFactor = getShadowFactor(light.sources[i], lightSpaceFragmentPositions[i], shadowMapSamplers[i]);
+        float shadowFactor = getShadowFactor(i);
         if (shadowFactor > 0.0f) {
             vec4 diffuseColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
             vec4 specularColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-            vec3 direction = getLightDirection(light.sources[i]);
+            vec3 direction = getLightDirection(i);
             float diffuseFactor = dot(normal, -direction);
-            float spotFactor = getSpotFactor(light.sources[i]);
+            float spotFactor = getSpotFactor(i);
 
             if (diffuseFactor > 0) {
-                float attenuation = getLightAttenuation(light.sources[i]);
+                float attenuation = getLightAttenuation(i);
                 diffuseColor = vec4(light.sources[i].color, 1.0f) *
                                light.sources[i].energy * attenuation *
                                materialParameters.materials[0].diffuseIntensity *
@@ -168,7 +176,7 @@ void main() {
                 }
             }
 
-            lightColor += (diffuseColor + specularColor) * spotFactor;
+            lightColor += (diffuseColor + specularColor) * spotFactor * shadowFactor;
         }
     }
 

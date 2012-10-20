@@ -3,6 +3,7 @@
 #include "SpotLight.h"
 #include "Light.h"
 #include "PerspectiveProjection.h"
+#include "configuration.h"
 
 SpotLight::SpotLight() {
     this->type = Light::TYPE_SPOT;
@@ -10,15 +11,15 @@ SpotLight::SpotLight() {
     this->size = 45.0f;
     this->blend = 0.15f;
     
+    this->shadowMap.setDimention(SHADOW);
+    
     this->shadowProjection = new PerspectiveProjection();
     this->shadowProjection->setAspectRatio(1.0f);
     this->shadowProjection->setFov(this->size);
 }
 
 SpotLight::~SpotLight() {
-    if (this->shadowProjection != NULL) {
-        delete this->shadowProjection;
-    }
+    delete this->shadowProjection;
 }
 
 LightData SpotLight::getLightData() const {

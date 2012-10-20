@@ -4,17 +4,19 @@
 #include "DirectedLight.h"
 #include "Light.h"
 #include "OrthographicProjection.h"
+#include "configuration.h"
 
 DirectedLight::DirectedLight() {
     this->type = Light::TYPE_DIRECTED;
+    
+    this->shadowMap.setDimention(SHADOW);
+    
     this->shadowProjection = new OrthographicProjection();
     this->shadowProjection->setAspectRatio(1.0f);
 }
 
 DirectedLight::~DirectedLight() {
-    if (this->shadowProjection != NULL) {
-        delete this->shadowProjection;
-    }
+    delete this->shadowProjection;
 }
 
 LightData DirectedLight::getLightData() const {

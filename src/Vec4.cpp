@@ -4,6 +4,8 @@
 #include "Vec4.h"
 #include "Vec3.h"
 
+const Vec4 Vec4::ZERO(0.0f, 0.0f, 0.0f, 0.0f);
+
 Vec4::Vec4() {
     this->vector[Vec4::X] = 0.0f;
     this->vector[Vec4::Y] = 0.0f;

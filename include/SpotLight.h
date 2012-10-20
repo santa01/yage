@@ -4,6 +4,8 @@
 #include "Light.h"
 #include "Projection.h"
 #include "PerspectiveProjection.h"
+#include "ShadowMap.h"
+#include "Texture.h"
 
 class SpotLight: public Light {
     public:
@@ -15,6 +17,10 @@ class SpotLight: public Light {
         }
         
         LightData getLightData() const;
+        
+        Texture& getShadowMap() {
+            return this->shadowMap;
+        }
         
         float getSize() const {
             return this->size;
@@ -46,6 +52,7 @@ class SpotLight: public Light {
 
     private:
         PerspectiveProjection* shadowProjection;
+        ShadowMap shadowMap;
         
         float size;
         float blend;

@@ -2,18 +2,17 @@
 #define	SHADOWMAP_H
 
 #include "Texture.h"
+#include "Vec3.h"
 
 class ShadowMap: public Texture {
     public:
         ShadowMap();
+        ShadowMap(int dimention);
         
         void setDimention(int dimention);
-        int getDimention() const {
-            return this->dimention;
-        }
         
     private:
-        int dimention;
+        void initialize();
 };
 
 #endif	/* SHADOWMAP_H */

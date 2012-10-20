@@ -10,6 +10,11 @@ class Vec3 {
         static const int X = 0;
         static const int Y = 1;
         static const int Z = 2;
+        
+        static const Vec3 UNIT_X;
+        static const Vec3 UNIT_Y;
+        static const Vec3 UNIT_Z;
+        static const Vec3 ZERO;
 
         Vec3();
         Vec3(float x, float y, float z);
