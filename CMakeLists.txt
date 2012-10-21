@@ -37,9 +37,8 @@ include_directories(${INCLUDE})
 include_directories(BEFORE SYSTEM ${YAGE_INCLUDE_DIR})
 
 # configure some headers
-set(FOO "Bar")
 set(HAVE_XRANDR_H ${X11_Xrandr_FOUND})
-configure_file(config.h.in config.h) # preprocess config.h.in header
+configure_file(yageconfig.h.in yageconfig.h) # preprocess yageconfig.h.in header
 
 # yage library
 add_library(${PROJECT} SHARED ${YAGE_SRC} ${YAGE_HEADERS})
