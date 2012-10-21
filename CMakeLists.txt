@@ -11,108 +11,48 @@ if(${PROJECT_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
   )
 endif(${PROJECT_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 
+# look for dependencies
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/" ${CMAKE_MODULE_PATH})
+
 find_package(X11 REQUIRED X11 Xrandr)
-if(X11_FOUND)
-    set(INCLUDE ${INCLUDE} ${X11_INCLUDE_DIR})
-    set(LIBRARIES ${LIBRARIES} ${X11_X11_LIB})
-endif(X11_FOUND)
+set(INCLUDE ${INCLUDE} ${X11_INCLUDE_DIR})
+set(LIBRARIES ${LIBRARIES} ${X11_X11_LIB})
 
 find_package(OpenGL REQUIRED gl)
-if(OPENGL_FOUND)
-    set(INCLUDE ${INCLUDE} ${OPENGL_INCLUDE_DIR})
-    set(YAGE_OPENGL ${OPENGL_gl_LIBRARY} CACHE FILEPATH "OpenGL library used for building yage (useful for bumblebee users)")
-    set(LIBRARIES ${LIBRARIES} ${YAGE_OPENGL})
-endif(OPENGL_FOUND)
+set(INCLUDE ${INCLUDE} ${OPENGL_INCLUDE_DIR})
+set(YAGE_OPENGL ${OPENGL_gl_LIBRARY} CACHE FILEPATH "OpenGL library used for building yage (useful for bumblebee users)")
+set(LIBRARIES ${LIBRARIES} ${YAGE_OPENGL})
 
-# TODO: custom modules
-# set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
+# find own sources
+find_package(yage REQUIRED)
 
-# check required includes and configure variables
+# TODO check required includes and configure variables
 # include(CheckIncludeFileCXX)
 # check_include_file_cxx("X11/extensions/Xrandr.h" HAVE_XRANDR_H)
 
-# configure project files
-set(SRC
-    src/RenderEffect.cpp
-    src/TGAImage.cpp
-    src/Vec3.cpp
-    src/Image.cpp
-    src/Mat4.cpp
-    src/Rotatable.cpp
-    src/Camera.cpp
-    src/Scene.cpp
-    src/DirectedLight.cpp
-    src/Scalable.cpp
-    src/Quaternion.cpp
-    src/Texture.cpp
-    src/Frustum.cpp
-    src/Extention.cpp
-    src/Mat3.cpp
-    src/Game.cpp
-    src/Movable.cpp
-    src/Renderable.cpp
-    src/Light.cpp
-    src/Mesh.cpp
-    src/OpenGLWindow.cpp
-    src/Renderer.cpp
-    src/Logger.cpp
-    src/SpotLight.cpp
-    src/ShaderLoader.cpp
-    src/PointLight.cpp
-    src/Vec4.cpp
-    src/Config.cpp
-)
-# aux_source_directory(src SRC)
-
-set(HEADERS
-    include/Rotatable.h
-    include/Mat4.h
-    include/configuration.h
-    include/TGAImage.h
-    include/Image.h
-    include/Logger.h
-    include/Mesh.h
-    include/Config.h
-    include/Mat3.h
-    include/Vec4.h
-    include/Scalable.h
-    include/Light.h
-    include/SpotLight.h
-    include/OpenGLWindow.h
-    include/Movable.h
-    include/DirectedLight.h
-    include/Quaternion.h
-    include/PointLight.h
-    include/Frustum.h
-    include/Camera.h
-    include/RenderEffect.h
-    include/Renderer.h
-    include/Vec3.h
-    include/Scene.h
-    include/Extention.h
-    include/Texture.h
-    include/Game.h
-    include/Renderable.h
-    include/ShaderLoader.h
-)
-
 # where to search sources and headers
-set(INCLUDE ${INCLUDE} "${PROJECT_SOURCE_DIR}/src" "${PROJECT_SOURCE_DIR}/include" ${CMAKE_BINARY_DIR})
+set(INCLUDE ${INCLUDE} ${CMAKE_BINARY_DIR})
+include_directories(${INCLUDE})
+# override system includes (for OpenGL headers)
+include_directories(BEFORE SYSTEM ${YAGE_INCLUDE_DIR})
 
+# configure some headers
 set(FOO "Bar")
 set(HAVE_XRANDR_H ${X11_Xrandr_FOUND})
 configure_file(config.h.in config.h) # preprocess config.h.in header
 
-add_library(${PROJECT} SHARED ${SRC} ${HEADERS})
-include_directories(${INCLUDE})
+# yage library
+add_library(${PROJECT} SHARED ${YAGE_SRC} ${YAGE_HEADERS})
 target_link_libraries(${PROJECT} ${LIBRARIES})
 
+# TODO: remove executable
 link_directories("${CMAKE_INSTALL_PREFIX}/lib")
 set(EXE run_${PROJECT})
 set(EXE_SRC src/main.cpp)
 add_executable(${EXE} ${EXE_SRC})
 target_link_libraries(${EXE} ${PROJECT})
 
+# Installation targets
 install(TARGETS ${PROJECT} DESTINATION lib)
 install(FILES ${HEADERS} DESTINATION include/${PROJECT})
 
