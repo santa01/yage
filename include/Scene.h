@@ -1,7 +1,7 @@
 #ifndef SCENE_H
 #define	SCENE_H
 
-#include <GL/gl.h>
+#include <global.h>
 #include <vector>
 #include <string>
 #include <set>

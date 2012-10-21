@@ -1,8 +1,3 @@
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-#include <GL/glext.h>
-#include <GL/glx.h>
-#include <X11/Xlib.h>
 #include <string>
 
 #include "Extention.h"

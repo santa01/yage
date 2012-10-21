@@ -38,7 +38,7 @@ include_directories(BEFORE SYSTEM ${YAGE_INCLUDE_DIR})
 
 # configure some headers
 set(HAVE_XRANDR_H ${X11_Xrandr_FOUND})
-configure_file(yageconfig.h.in yageconfig.h) # preprocess yageconfig.h.in header
+configure_file(global.h.in global.h) # preprocess global.h.in header
 
 # yage library
 add_library(${PROJECT} SHARED ${YAGE_SRC} ${YAGE_HEADERS})
@@ -53,7 +53,7 @@ target_link_libraries(${EXE} ${PROJECT})
 
 # Installation targets
 install(TARGETS ${PROJECT} DESTINATION lib)
-install(FILES ${HEADERS} DESTINATION include/${PROJECT})
+install(FILES ${YAGE_HEADERS} DESTINATION include/${PROJECT})
 
 # CTest
 option(MAKE_TESTS "Build tests with application" OFF)

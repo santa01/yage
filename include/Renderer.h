@@ -1,7 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <GL/gl.h>
+#include <global.h>
 #include <vector>
 #include <string>
 
