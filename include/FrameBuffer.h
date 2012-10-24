@@ -1,7 +1,7 @@
 #ifndef FRAMEBUFFER_H
 #define	FRAMEBUFFER_H
 
-#include <GL/gl.h>
+#include <global.h>
 
 #include "Texture.h"
 
@@ -11,7 +11,9 @@ class FrameBuffer {
         ~FrameBuffer();
         
         void bind();
-        void attachTexture(const Texture& texture);
+        
+        void attachDepthTexture(const Texture& texture, int layer);
+        void attachColorTexture(const Texture& texture, int layer);
   
     private:
         FrameBuffer(const FrameBuffer&);

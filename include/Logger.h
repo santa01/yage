@@ -3,9 +3,11 @@
 
 class Logger {
     public:
-        static const int LOG_ERROR = 0;
-        static const int LOG_WARNING = 1;
-        static const int LOG_INFO = 2;
+        enum {
+            LOG_ERROR,
+            LOG_WARNING,
+            LOG_INFO
+        };
 
         static Logger& getInstance() {
             static Logger instance;

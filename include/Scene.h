@@ -13,6 +13,8 @@
 #include "Camera.h"
 #include "Vec3.h"
 #include "FrameBuffer.h"
+#include "ShadowMapArray.h"
+#include "ShadowCubeMapArray.h"
 
 #pragma pack(push, 1)
 
@@ -71,10 +73,16 @@ class Scene {
         std::vector<Light*> lights;
         std::set<RenderEffect*> effects;
         std::set<Texture*> textures;
+
         Camera camera;
         
         FrameBuffer depthBuffer;
-        RenderEffect* shadowMapEffect;
+        FrameBuffer depthPointLightBuffer;
+
+        ShadowMapArray depthMaps;
+        ShadowCubeMapArray depthPointLightMaps;
+
+        RenderEffect* depthEffect;
         
         Vec3 ambientLightColor;
         float ambientLightIntensity;

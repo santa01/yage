@@ -1,17 +1,12 @@
 #include <memory.h>
 
 #include "SpotLight.h"
-#include "Light.h"
-#include "PerspectiveProjection.h"
-#include "configuration.h"
 
 SpotLight::SpotLight() {
     this->type = Light::TYPE_SPOT;
     this->falloff = 30.0f;
     this->size = 45.0f;
     this->blend = 0.15f;
-    
-    this->shadowMap.setDimention(SHADOW);
     
     this->shadowProjection = new PerspectiveProjection();
     this->shadowProjection->setAspectRatio(1.0f);
@@ -31,7 +26,7 @@ LightData SpotLight::getLightData() const {
     data.size = this->size;
     data.falloff = this->falloff;
     data.blend = this->blend;
-    data.shadow = this->shadow;
+    data.shadow = this->shadowCaster;
     memcpy(data.color, this->color.data(), sizeof(data.color));
     memcpy(data.position, this->position.data(), sizeof(data.position));
     memcpy(data.direction, this->direction.data(), sizeof(data.direction));

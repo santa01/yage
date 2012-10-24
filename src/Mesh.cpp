@@ -175,7 +175,7 @@ void Mesh::render() {
     }
 
     glBindVertexArray(this->vao);
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLvoid*)0);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLvoid*)0);  // TODO
     glBindVertexArray(0);
 }
 

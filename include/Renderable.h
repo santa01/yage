@@ -35,20 +35,20 @@ class Renderable {
             this->effect = effect;
         }
         
-        bool isCastsShadow() const {
-            return this->castsShadow;
+        bool castsShadow() const {
+            return this->shadowCaster;
         }
 
         void setCastsShadow(bool castsShadow) {
-            this->castsShadow = castsShadow;
+            this->shadowCaster = castsShadow;
         }
 
-        bool isReceivesShadow() const {
-            return this->receivesShadow;
+        bool receivesShadow() const {
+            return this->shadowReceiver;
         }
 
         void setReceivesShadow(bool receivesShadow) {
-            this->receivesShadow = receivesShadow;
+            this->shadowReceiver = receivesShadow;
         }
         
         virtual void render() = 0;
@@ -59,8 +59,8 @@ class Renderable {
         Texture* diffuseTexture;
         RenderEffect* effect;
         
-        bool castsShadow;
-        bool receivesShadow;
+        bool shadowCaster;
+        bool shadowReceiver;
 };
 
 #endif	/* RENDERABLE_H */

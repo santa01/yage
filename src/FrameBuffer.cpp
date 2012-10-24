@@ -1,14 +1,7 @@
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-#include <GL/glext.h>
-
 #include "FrameBuffer.h"
 
 FrameBuffer::FrameBuffer() {
     glGenFramebuffers(1, &this->fbo);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->fbo);
-    glDrawBuffer(GL_NONE);
-    glBindFramebuffer(GL_DRAW_BUFFER, 0);
 }
 
 FrameBuffer::~FrameBuffer() {
@@ -19,7 +12,12 @@ void FrameBuffer::bind() {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->fbo);
 }
 
-void FrameBuffer::attachTexture(const Texture& texture) {
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-            GL_TEXTURE_2D, texture.getTextureHandle(), 0);
+void FrameBuffer::attachDepthTexture(const Texture& texture, int layer) {
+    glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+            texture.getTextureHandle(), 0, layer);
+}
+
+void FrameBuffer::attachColorTexture(const Texture& texture, int layer) {
+    glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+            texture.getTextureHandle(), 0, layer);
 }

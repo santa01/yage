@@ -16,26 +16,31 @@ GLuint ShaderLoader::createShader(const std::string& name) {
     return 0;
 }
 
-GLuint ShaderLoader::createProgram(const std::vector<GLuint>& shaders) {
+GLuint ShaderLoader::createProgram(const std::vector<std::string>& shaders) {
     GLuint program = glCreateProgram();
     
-    std::vector<GLuint>::const_iterator shader;
+    std::vector<std::string>::const_iterator shader;
     for (shader = shaders.begin(); shader != shaders.end(); shader++) {
-        glAttachShader(program, *shader);
+        GLuint shaderObject = ShaderLoader::createShader(*shader);
+        glAttachShader(program, shaderObject);
+        glDeleteShader(shaderObject);
     }
     
     glLinkProgram(program);
 
-    GLint linkStatus;
-    glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
-    if (linkStatus == GL_FALSE) {
-        GLint infoLogLength;
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
-        
-        GLchar* infoLog = new GLchar[infoLogLength + 1];
+    GLint infoLogLength;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+    if (infoLogLength > 0) {
+        GLchar* infoLog = new GLchar[infoLogLength];
         glGetProgramInfoLog(program, infoLogLength, NULL, infoLog);
-        
-        Logger::getInstance().log(Logger::LOG_ERROR, infoLog);
+
+        GLint linkStatus;
+        glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+
+        int level = (linkStatus == GL_FALSE) ? Logger::LOG_ERROR : Logger::LOG_INFO;
+        Logger::getInstance().log(level, "  %s", infoLog);
+
         delete[] infoLog;
     }
 
@@ -63,18 +68,21 @@ GLuint ShaderLoader::shaderFromFile(const std::string& name, GLenum type) {
 
     delete[] shaderSource;
 
-    GLint compileStatus;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
-    if (compileStatus == GL_FALSE) {
-        GLint infoLogLength;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
-        
-        GLchar* infoLog = new GLchar[infoLogLength + 1];
+    GLint infoLogLength;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
+    
+    if (infoLogLength > 0) {
+        GLchar* infoLog = new GLchar[infoLogLength];
         glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
-        
-        Logger::getInstance().log(Logger::LOG_ERROR, "In file %s: %s", name.c_str(), infoLog);
+
+        GLint compileStatus;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
+
+        int level = (compileStatus == GL_FALSE) ? Logger::LOG_ERROR : Logger::LOG_INFO;
+        Logger::getInstance().log(level, "%s: %s", name.c_str(), infoLog);
+
         delete[] infoLog;
     }
-    
+
     return shader;
 }

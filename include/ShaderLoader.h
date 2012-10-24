@@ -8,7 +8,7 @@
 class ShaderLoader {
     public:
         static GLuint createShader(const std::string& name);
-        static GLuint createProgram(const std::vector<GLuint>& shaders);
+        static GLuint createProgram(const std::vector<std::string>& shaders);
 
     private:
         static GLuint shaderFromFile(const std::string& name, GLenum type);

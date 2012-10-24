@@ -1,4 +1,3 @@
-#define _ISOC99_SOURCE
 #include <cmath>
 
 #include "Camera.h"
@@ -13,13 +12,13 @@ Camera::Camera() {
 }
 
 Camera::Camera(float x, float y, float z) {
-    this->initialize();
     this->setPosition(x, y, z);
+    this->initialize();
 }
 
 Camera::Camera(const Vec3& position) {
-    this->initialize();
     this->setPosition(position);
+    this->initialize();
 }
 
 Camera::~Camera() {
@@ -56,8 +55,9 @@ float Camera::getZAngle() const {
 }
 
 void Camera::rotate(const Vec3& vector, float angle) {
-    if (vector == Vec3::ZERO)
+    if (vector == Vec3::ZERO) {
         return;
+    }
     
     Vec3 axis(vector);
     Quaternion q(axis.normalize(), angle * M_PI / 180.0f);
@@ -79,19 +79,19 @@ void Camera::rotate(const Vec3& vector, float angle) {
     this->updateRotationMatrix(right, up, target);
 }
 
-Vec3 Camera::getUpVector() const {
+Vec3 Camera::getUp() const {
     return Vec3(this->rotationMatrix.get(1, 0),
                 this->rotationMatrix.get(1, 1),
                 this->rotationMatrix.get(1, 2));
 }
 
-Vec3 Camera::getTargetVector() const {
-    return Vec3(this->rotationMatrix.get(2, 0),
-                this->rotationMatrix.get(2, 1),
-                this->rotationMatrix.get(2, 2));
+Vec3 Camera::getTarget() const {
+    return -Vec3(this->rotationMatrix.get(2, 0),
+                 this->rotationMatrix.get(2, 1),
+                 this->rotationMatrix.get(2, 2));
 }
 
-Vec3 Camera::getRightVector() const {
+Vec3 Camera::getRight() const {
     Vec3 up(this->rotationMatrix.get(1, 0),
             this->rotationMatrix.get(1, 1),
             this->rotationMatrix.get(1, 2));
@@ -107,13 +107,14 @@ void Camera::lookAt(float x, float y, float z) {
 }
 
 void Camera::lookAt(const Vec3& vector) {
-    if (vector == Vec3::ZERO)
+    if (vector == Vec3::ZERO) {
         return;
+    }
     
-    Vec3 target(vector);
+    Vec3 target(-vector);
     target.normalize();
 
-    Vec3 right = this->getRightVector();
+    Vec3 right = this->getRight();
     if (target != Vec3::UNIT_Y && target != -Vec3::UNIT_Y) {
         right = target.cross(Vec3::UNIT_Y);
         right.normalize();  
@@ -140,6 +141,6 @@ void Camera::updateRotationMatrix(const Vec3& right, const Vec3& up, const Vec3&
 }
 
 void Camera::initialize() {
-    this->lookAt(0.0f, 0.0f, -1.0f);
+    this->lookAt(Vec3::UNIT_Z);
     this->projection = new PerspectiveProjection();
 }

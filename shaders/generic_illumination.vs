@@ -1,10 +1,7 @@
 #version 330
 
-#define MAX_LIGHTS          24
-
-#define TYPE_DIRECTED       0
+#define MAX_LIGHTS          16
 #define TYPE_POINT          1
-#define TYPE_SPOT           2
 
 /* Dont change fields order! */
 struct LightSource {
@@ -44,15 +41,11 @@ void main () {
 
     for (int i = 0; i < light.sourcesCount; i++) {
         if (light.sources[i].shadow) {
-            switch (light.sources[i].type) {
-                case TYPE_POINT:
-                    break;
-
-                default:
-                    lightSpaceFragmentPositions[i] =
-                            lightModelViewPerspectiveMatrices[i] *
-                            localWorldMatrix *
-                            vec4(vertexPosition, 1.0f);
+            if (light.sources[i].type != TYPE_POINT) {
+                lightSpaceFragmentPositions[i] =
+                        lightModelViewPerspectiveMatrices[i] *
+                        localWorldMatrix *
+                        vec4(vertexPosition, 1.0f);
             }
         }
     }

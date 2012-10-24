@@ -1,4 +1,3 @@
-#define _ISOC99_SOURCE
 #include <cmath>
 
 #include "Vec3.h"

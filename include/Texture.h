@@ -11,6 +11,10 @@ class Texture {
         GLuint getTextureHandle() const {
             return this->texture;
         }
+        
+        GLenum getTextureType() const {
+            return this->type;
+        }
 
         int getWidth() const {
             return this->width;
@@ -24,6 +28,7 @@ class Texture {
 
     protected:
         GLuint texture;
+        GLenum type;
 
         int width;
         int height;

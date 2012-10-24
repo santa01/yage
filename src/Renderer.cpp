@@ -37,9 +37,9 @@ void Renderer::onMouseMotionEvent(int x, int y) {
 
         this->cameraVerticalAngle += yAngle;
 
-        this->scene->getCamera().rotate(Vec3(0.0f, 1.0f, 0.0f), x * MOUSE_SPEED);
+        this->scene->getCamera().rotate(Vec3::UNIT_Y, x * MOUSE_SPEED);
         if (yAngle != 0) {
-            this->scene->getCamera().rotate(this->scene->getCamera().getRightVector(), yAngle);
+            this->scene->getCamera().rotate(this->scene->getCamera().getRight(), yAngle);
         }
     }
 }
@@ -121,10 +121,14 @@ void Renderer::onInit() {
     
     PointLight* light1 = new PointLight();
     light1->setPosition(1.0f, 3.0f, 1.0f);
-    light1->setEnergy(2.0f);
+    light1->setEnergy(1.0f);
     light1->setFalloff(10.0f);
-    //light1->setShadow(false);
-    //this->scene->addLight(light1);
+    
+    PointLight* light5 = new PointLight();
+    light5->setPosition(2.0f, 3.0f, 1.0f);
+    light5->setEnergy(1.0f);
+    light5->setFalloff(10.0f);
+    this->scene->addLight(light5);
     
     SpotLight* light2 = new SpotLight();
     light2->setPosition(2.0f, 4.0f, -4.0f);
@@ -132,20 +136,23 @@ void Renderer::onInit() {
     light2->pitch(-70.0f);
     light2->setEnergy(2.0f);
     this->scene->addLight(light2);
+    this->scene->addLight(light1);
     
     DirectedLight* light3 = new DirectedLight();
     light3->setDirection(0.0f, -5.0f, 5.0f);
     light3->setEnergy(0.1f);
-    this->scene->addLight(light3);
+    //this->scene->addLight(light3);
     
     DirectedLight* light4 = new DirectedLight();
     light4->setDirection(-5.0f, -5.0f, 5.0f);
     light4->setEnergy(0.1f);
     this->scene->addLight(light4);
     
-    this->scene->setAmbientLightIntensity(0.0f);
+    this->scene->setAmbientLightIntensity(0.1f);
     this->scene->getCamera().setPosition(1.5f, 1.5f, -5.0f);
-    this->scene->getCamera().setAspectRatio((float)this->width / this->height);
+    PerspectiveProjection* projection =
+            (PerspectiveProjection*)this->scene->getCamera().getProjection();
+    projection->setAspectRatio((float)this->width / this->height);
 
     this->captureMouse(true);
 }
@@ -175,22 +182,22 @@ void Renderer::onIdle() {
     float corrention = this->getFrameTime();
 
     if (this->keysStates[FORWARD]) {
-        cameraPosition -= this->scene->getCamera().getTargetVector() *
+        cameraPosition += this->scene->getCamera().getTarget() *
                           FORWARD_SPEED * corrention;
     }
 
     if (this->keysStates[BACKWARD]) {
-        cameraPosition += this->scene->getCamera().getTargetVector() *
+        cameraPosition -= this->scene->getCamera().getTarget() *
                           BACKWARD_SPEED  * corrention;
     }
 
     if (this->keysStates[STEP_RIGHT]) {
-        cameraPosition += this->scene->getCamera().getRightVector() *
+        cameraPosition += this->scene->getCamera().getRight() *
                           STEP_SPEED  * corrention;
     }
     
     if (this->keysStates[STEP_LEFT]) {
-        cameraPosition -= this->scene->getCamera().getRightVector() *
+        cameraPosition -= this->scene->getCamera().getRight() *
                           STEP_SPEED  * corrention;
     }
 

@@ -6,7 +6,6 @@
 #include "Vec3.h"
 #include "Mat4.h"
 #include "Projection.h"
-#include "Texture.h"
 #include "Rotatable.h"
 #include "Movable.h"
 
@@ -30,9 +29,11 @@ typedef struct {
 
 class Light: public Movable, public Rotatable {
     public:
-        static const int TYPE_DIRECTED = 0;
-        static const int TYPE_POINT = 1;
-        static const int TYPE_SPOT = 2;
+        enum {
+            TYPE_DIRECTED,
+            TYPE_POINT,
+            TYPE_SPOT
+        };
         
         Light();
         virtual ~Light();
@@ -45,7 +46,7 @@ class Light: public Movable, public Rotatable {
         
         void setPosition(const Vec3& position) {
             this->position = position;
-            this->setValid(false);
+            this->valid = false;
         }
         
         Vec3 getPosition() const {
@@ -64,7 +65,7 @@ class Light: public Movable, public Rotatable {
         
         void setDirection(const Vec3& direction) {
             this->direction = direction;
-            this->setValid(false);
+            this->valid = false;
         }
         
         const Vec3& getDirection() const {
@@ -85,50 +86,33 @@ class Light: public Movable, public Rotatable {
         
         void setColor(const Vec3& color) {
             this->color = color;
-            this->setValid(false);
+            this->valid = false;
         }
         
         const Vec3& getColor() const {
             return this->color;
         }
-        
+
         void setEnergy(float energy) {
             this->energy = energy;
-            this->setValid(false);
+            this->valid = false;
         }
         
         float getEnergy() const {
             return this->energy;
         }
         
-        void setShadow(bool shadow) {
-            this->shadow = shadow;
-            this->setValid(false);
+        void setCastsShadow(bool castsShadow) {
+            this->shadowCaster = castsShadow;
+            this->valid = false;
         }
         
-        bool isShadow() const {
-            return this->shadow;
-        }
-        
-        void setValid(bool valid) {
-            this->valid = valid;
-        }
-        
-        bool isValid() const {
-            return this->valid;
+        bool castsShadow() const {
+            return this->shadowCaster;
         }
 
-        void setRaw(bool raw) {
-            this->raw = raw;
-        }
-
-        bool isRaw() const {
-            return this->raw;
-        }
-
-        virtual Projection* getShadowProjection() const = 0;
+        virtual const Projection* getShadowProjection() const = 0;
         virtual LightData getLightData() const = 0;
-        virtual Texture& getShadowMap() = 0;
         
     protected:
         std::string name;
@@ -138,9 +122,11 @@ class Light: public Movable, public Rotatable {
         
         int type;
         float energy;
-        bool shadow;
-        bool valid;
-        bool raw;
+        bool shadowCaster;
+        
+        friend class Scene;
+        bool valid;     // Should be set to false whenever light properties are changed.
+        bool raw;       // Sholud be initially true, indicates that this light is new.
 };
 
 #endif	/* LIGHT_H */

@@ -1,6 +1,4 @@
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-#include <GL/glext.h>
+#include <global.h>
 
 #include "ImageTexture.h"
 #include "Image.h"
@@ -41,6 +39,8 @@ bool ImageTexture::load(const Image& image) {
 // }
 
 void ImageTexture::initialize() {
+    this->type = GL_TEXTURE_2D;
+
     glBindTexture(GL_TEXTURE_2D, this->texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

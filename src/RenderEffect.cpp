@@ -1,4 +1,3 @@
-#include <memory.h>
 #include <sstream>
 
 #include "RenderEffect.h"
@@ -7,18 +6,17 @@
 
 RenderEffect::RenderEffect() {
     this->program = 0;
-    
-    this->modelViewPerspectiveMatrix = -1;
-    this->localWorldMatrix = -1;
-    this->cameraPosition = -1;
-    
-    memset(this->lightModelViewPerspectiveMatrices, -1, sizeof(this->lightModelViewPerspectiveMatrices));
-    memset(this->shadowMapSamplers, -1, sizeof(this->shadowMapSamplers));
+}
+
+RenderEffect::~RenderEffect() {
+    if (this->program != 0) {
+        glDeleteProgram(this->program);
+    }
 }
 
 void RenderEffect::setModelViewPerspectiveMatrix(const Mat4& matrix) {
     this->enable();
-    
+
     if (this->modelViewPerspectiveMatrix > -1) {
         glUniformMatrix4fv(this->modelViewPerspectiveMatrix, 1, GL_TRUE, (GLfloat*)matrix.data());
     }
@@ -37,14 +35,6 @@ void RenderEffect::setLightModelViewPerspectiveMatrix(int lightIndex, const Mat4
     
     if (this->lightModelViewPerspectiveMatrices[lightIndex] > -1) {
         glUniformMatrix4fv(this->lightModelViewPerspectiveMatrices[lightIndex], 1, GL_TRUE, (GLfloat*)matrix.data());
-    }
-}
-
-void RenderEffect::setShadowMapSampler(int lightIndex, int textureUnit) {
-    this->enable();
-
-    if (this->shadowMapSamplers[lightIndex] > -1) {
-        glUniform1i(this->shadowMapSamplers[lightIndex], textureUnit);
     }
 }
 
@@ -73,7 +63,7 @@ void RenderEffect::setLightSources(GLuint lightSourcesBuffer) {
 
 void RenderEffect::attachShader(const std::string& name) {
     if (this->program == 0) {
-        this->shaderList.push_back(ShaderLoader::createShader(name));
+        this->shaderList.push_back(name);
     }
 }
 
@@ -86,7 +76,7 @@ void RenderEffect::enable() {
         this->localWorldMatrix = glGetUniformLocation(this->program, "localWorldMatrix");
         this->cameraPosition = glGetUniformLocation(this->program, "cameraPosition");
 
-        for (int i = 0; i < RenderEffect::MAX_LIGHTS; i++) {
+        for (unsigned int i = 0; i < RenderEffect::MAX_LIGHTS; i++) {
             std::stringstream builder;
             builder << "lightModelViewPerspectiveMatrices[" << i << "]";
 
@@ -96,34 +86,39 @@ void RenderEffect::enable() {
             }
         }
         
-        for (int i = 0; i < RenderEffect::MAX_LIGHTS; i++) {
-            std::stringstream builder;
-            builder << "shadowMapSamplers[" << i << "]";
+        GLint samplerLocation = glGetUniformLocation(this->program, "diffuseTextureSampler");
+        if (samplerLocation > -1) {
+            glUniform1i(samplerLocation, RenderEffect::DIFFUSE_TEXTURE_UNIT);
+        }
+        
+        samplerLocation = glGetUniformLocation(this->program, "specularTextureSampler");
+        if (samplerLocation > -1) {
+            glUniform1i(samplerLocation, RenderEffect::SPECULAR_TEXTURE_UNIT);
+        }
+        
+        samplerLocation = glGetUniformLocation(this->program, "shadowMapArraySampler");
+        if (samplerLocation > -1) {
+            glUniform1i(samplerLocation, RenderEffect::SHADOW_MAP_ARRAY_TEXTURE_UNIT);
+        }
 
-            this->shadowMapSamplers[i] = glGetUniformLocation(this->program, builder.str().c_str());
-            if (this->shadowMapSamplers[i] == -1) {
-                break;
-            }
-        }
-        
-        GLint diffuseTextureSampler = glGetUniformLocation(this->program, "diffuseTextureSampler");
-        if (diffuseTextureSampler > -1) {
-            glUniform1i(diffuseTextureSampler, RenderEffect::DIFFUSE_TEXTURE_UNIT);
+        samplerLocation = glGetUniformLocation(this->program, "shadowCubeMapArraySampler");
+        if (samplerLocation > -1) {
+            glUniform1i(samplerLocation, RenderEffect::SHADOW_CUBE_MAP_ARRAY_TEXTURE_UNIT);
         }
 
-        GLuint materialParameters = glGetUniformBlockIndex(this->program, "MaterialParameters");
-        if (materialParameters != GL_INVALID_INDEX) {
-            glUniformBlockBinding(this->program, materialParameters, RenderEffect::MATERIAL_PARAMETERS_BINDPOINT);
+        GLuint uniformBlockIndex = glGetUniformBlockIndex(this->program, "MaterialParameters");
+        if (uniformBlockIndex != GL_INVALID_INDEX) {
+            glUniformBlockBinding(this->program, uniformBlockIndex, RenderEffect::MATERIAL_PARAMETERS_BINDPOINT);
         }
         
-        GLuint ambientLightIndex = glGetUniformBlockIndex(this->program, "AmbientLight");
-        if (ambientLightIndex != GL_INVALID_INDEX) {
-            glUniformBlockBinding(this->program, ambientLightIndex, RenderEffect::AMBIENT_LIGHT_BINDPOINT);
+        uniformBlockIndex = glGetUniformBlockIndex(this->program, "AmbientLight");
+        if (uniformBlockIndex != GL_INVALID_INDEX) {
+            glUniformBlockBinding(this->program, uniformBlockIndex, RenderEffect::AMBIENT_LIGHT_BINDPOINT);
         }
         
-        GLuint lightIndex = glGetUniformBlockIndex(this->program, "Light");
-        if (lightIndex != GL_INVALID_INDEX) {
-            glUniformBlockBinding(this->program, lightIndex, RenderEffect::LIGHT_SOURCES_BINDPOINT);   
+        uniformBlockIndex = glGetUniformBlockIndex(this->program, "Light");
+        if (uniformBlockIndex != GL_INVALID_INDEX) {
+            glUniformBlockBinding(this->program, uniformBlockIndex, RenderEffect::LIGHT_SOURCES_BINDPOINT);   
         }
     } else {
         glUseProgram(this->program);

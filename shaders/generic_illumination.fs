@@ -1,9 +1,9 @@
 #version 330
+#extension GL_ARB_texture_cube_map_array: enable
 
-#define MAX_LIGHTS          24
+#define MAX_LIGHTS          16
 #define MAX_MATERIALS       16
 #define M_PI                3.14159265358979323846
-#define BIAS                0.0002
 
 #define TYPE_DIRECTED       0
 #define TYPE_POINT          1
@@ -34,6 +34,7 @@ layout(std140) uniform AmbientLight {
     float intensity;
 } ambientLight;
 
+// TODO: impelement in user space
 layout(std140) uniform MeshParameters {
     int castsShadow;
     int receivesShadow;
@@ -49,10 +50,22 @@ layout(std140) uniform Light {
     LightSource sources[MAX_LIGHTS];
 } light;
 
+const mat4 normalizedUvMatrix = mat4(0.5f, 0.0f, 0.0f, 0.0f,
+                                     0.0f, 0.5f, 0.0f, 0.0f,
+                                     0.0f, 0.0f, 0.5f, 0.0f,
+                                     0.5f, 0.5f, 0.5f, 1.0f);
+
+// This is a quirk to for proper cubemap sampling.
+// For some reason cubemaps have Y flipped.
+const mat3 invertYCoord = mat3(1.0f,  0.0f, 0.0f,
+                               0.0f, -1.0f, 0.0f,
+                               0.0f,  0.0f, 1.0f);
+
 uniform vec3 cameraPosition;
 uniform sampler2D diffuseTextureSampler;
 uniform sampler2D specularTextureSampler;
-uniform sampler2D shadowMapSamplers[MAX_LIGHTS];
+uniform sampler2DArray shadowMapArraySampler;
+uniform samplerCubeArray shadowCubeMapArraySampler;
 
 smooth in vec3 fragmentPosition;
 smooth in vec3 fragmentNormal;
@@ -61,78 +74,74 @@ smooth in vec4 lightSpaceFragmentPositions[MAX_LIGHTS];
 
 out vec4 fragmentColor;
 
-const mat4 normalizedUvMatrix = mat4(0.5f, 0.0f, 0.0f, 0.0f,
-                                     0.0f, 0.5f, 0.0f, 0.0f,
-                                     0.0f, 0.0f, 0.5f, 0.0f,
-                                     0.5f, 0.5f, 0.5f, 1.0f);
-
 vec3 getLightDirection(in int lightIndex) {
     LightSource lightSource = light.sources[lightIndex];
 
-    switch (light.sources[lightIndex].type) {
-        case TYPE_POINT:
-            return normalize(fragmentPosition - lightSource.position);
-        
-        default:
-            return lightSource.direction;
+    if (lightSource.type == TYPE_POINT) {
+        return normalize(fragmentPosition - lightSource.position);
     }
+    
+    return lightSource.direction;
 }
 
 float getLightAttenuation(in int lightIndex) {
     LightSource lightSource = light.sources[lightIndex];
 
-    switch (lightSource.type) {
-        case TYPE_DIRECTED:
-            return 1.0f;
-        
-        default:
-            float falloffSquare = pow(lightSource.falloff, 2);
-            float distanceSquare = pow(distance(lightSource.position, fragmentPosition), 2);
-            return falloffSquare / (falloffSquare + distanceSquare);
+    if (lightSource.type == TYPE_DIRECTED) {
+        return 1.0f;
     }
+
+    float falloffSquare = pow(lightSource.falloff, 2);
+    float distanceSquare = pow(distance(lightSource.position, fragmentPosition), 2);
+    return falloffSquare / (falloffSquare + distanceSquare);
 }
 
 float getSpotFactor(in int lightIndex) {
     LightSource lightSource = light.sources[lightIndex];
 
-    switch (lightSource.type) {
-        case TYPE_SPOT:
-            float viewAngle = pow(dot(lightSource.direction, normalize(fragmentPosition - lightSource.position)), 2.0f);
-            float maxAngle = pow(cos(lightSource.size * M_PI / 360.0f), 2.0f);
-            if (viewAngle < maxAngle) {
-                return 0.0f;
-            }
+    if (lightSource.type == TYPE_SPOT) {
+        float viewAngle = pow(dot(lightSource.direction, normalize(fragmentPosition - lightSource.position)), 2.0f);
+        float maxAngle = pow(cos(lightSource.size * M_PI / 360.0f), 2.0f);
+        if (viewAngle < maxAngle) {
+            return 0.0f;
+       }
 
-            float blend = 1.0f - lightSource.blend;
-            float blendAngle = 1.0f / (blend / maxAngle - blend + 1.0f);
-            if (viewAngle < blendAngle) {
-                return (viewAngle - maxAngle) / (blendAngle - maxAngle);
-            }
-            // no break, fall through
-        default:
-            return 1.0f;
+        float blend = 1.0f - lightSource.blend;
+        float blendAngle = 1.0f / (blend / maxAngle - blend + 1.0f);
+        if (viewAngle < blendAngle) {
+           return (viewAngle - maxAngle) / (blendAngle - maxAngle);
+        }
     }
+
+    return 1.0f;
 }
 
 float getShadowFactor(in int lightIndex) {
     LightSource lightSource = light.sources[lightIndex];
+    float shadowMapDepth = 0.0f;
+    float fragmentDepth = 0.0f;
 
     if (lightSource.shadow) {
-        switch (lightSource.type) {
-            case TYPE_POINT:
-                break;
-
-            default:
-                vec4 lightSpaceFragmentPosition = lightSpaceFragmentPositions[lightIndex];
-                vec4 lightSpaceOccludeFragmentPosition = normalizedUvMatrix *
+        if (lightSource.type == TYPE_POINT) {
+            vec3 fragmentDirection = invertYCoord *
+                    (fragmentPosition - lightSource.position);
+            vec4 textureCoordinate = vec4(fragmentDirection, lightIndex);
+            shadowMapDepth = texture(shadowCubeMapArraySampler,
+                                     textureCoordinate).r;
+            fragmentDepth = length(fragmentDirection) - 0.02f;
+        } else {
+            vec4 lightSpaceFragmentPosition = lightSpaceFragmentPositions[lightIndex];
+            vec4 occludedFragmentPosition = normalizedUvMatrix *
                     (lightSpaceFragmentPosition / lightSpaceFragmentPosition.w);
-                float shadowMapDepth = texture(shadowMapSamplers[lightIndex],
-                                               lightSpaceOccludeFragmentPosition.st);
-
-                if (lightSpaceOccludeFragmentPosition.z - BIAS > shadowMapDepth) {
-                    return 0.0f;
-                }
+            vec3 textureCoordinate = vec3(occludedFragmentPosition.st, lightIndex);
+            shadowMapDepth = texture(shadowMapArraySampler,
+                                     textureCoordinate).r;
+            fragmentDepth = occludedFragmentPosition.z - 0.0002f;
         }
+    }
+
+    if (fragmentDepth > shadowMapDepth) {
+        return 0.0f;
     }
 
     return 1.0f;
@@ -148,6 +157,8 @@ void main() {
     vec4 lightColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
     for (int i = 0; i < light.sourcesCount; i++) {
+        LightSource lightSource = light.sources[i];
+        
         float shadowFactor = getShadowFactor(i);
         if (shadowFactor > 0.0f) {
             vec4 diffuseColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -159,8 +170,9 @@ void main() {
 
             if (diffuseFactor > 0) {
                 float attenuation = getLightAttenuation(i);
-                diffuseColor = vec4(light.sources[i].color, 1.0f) *
-                               light.sources[i].energy * attenuation *
+                diffuseColor = vec4(lightSource.color, 1.0f) *
+                               lightSource.energy *
+                               attenuation *
                                materialParameters.materials[0].diffuseIntensity *
                                diffuseFactor;
 
@@ -169,8 +181,9 @@ void main() {
                 float specularFactor = dot(viewerDirection, reflectionDirection);
 
                 if (specularFactor > 0) {
-                    specularColor = vec4(light.sources[i].color, 1.0f) *
-                                    light.sources[i].energy * attenuation *
+                    specularColor = vec4(lightSource.color, 1.0f) *
+                                    lightSource.energy *
+                                    attenuation *
                                     materialParameters.materials[0].specularIntensity *
                                     pow(specularFactor, materialParameters.materials[0].specularExponent);
                 }

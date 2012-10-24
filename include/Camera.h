@@ -1,6 +1,8 @@
 #ifndef CAMERA_H
 #define	CAMERA_H
 
+#include <cstdlib>
+
 #include "Mat4.h"
 #include "Vec3.h"
 #include "Projection.h"
@@ -41,13 +43,16 @@ class Camera: public Movable, public Rotatable {
             return this->projection;
         }
 
-        void setProjection(Projection* projection) {
-            this->projection = projection;
+        void setProjection(const Projection* projection) {
+            if (projection != NULL) {
+                delete this->projection;
+                this->projection = new Projection(*projection);
+            }
         }
         
-        Vec3 getUpVector() const;
-        Vec3 getTargetVector() const;
-        Vec3 getRightVector() const;
+        Vec3 getUp() const;
+        Vec3 getTarget() const;
+        Vec3 getRight() const;
         
         void lookAt(float x, float y, float z);
         void lookAt(const Vec3& target);

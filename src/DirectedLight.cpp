@@ -2,14 +2,9 @@
 #include <cstdlib>
 
 #include "DirectedLight.h"
-#include "Light.h"
-#include "OrthographicProjection.h"
-#include "configuration.h"
 
 DirectedLight::DirectedLight() {
     this->type = Light::TYPE_DIRECTED;
-    
-    this->shadowMap.setDimention(SHADOW);
     
     this->shadowProjection = new OrthographicProjection();
     this->shadowProjection->setAspectRatio(1.0f);
@@ -25,7 +20,7 @@ LightData DirectedLight::getLightData() const {
     
     data.type = this->type;
     data.energy = this->energy;
-    data.shadow = this->shadow;
+    data.shadow = this->shadowCaster;
     memcpy(data.color, this->color.data(), sizeof(data.color));
     memcpy(data.direction, this->direction.data(), sizeof(data.direction));
     
