@@ -13,6 +13,7 @@ set(YAGE_DIR "${PROJECT_SOURCE_DIR}")
 set(YAGE_SRC
     src/Camera.cpp
     src/Config.cpp
+    src/CubeTexture.cpp
     src/DirectedLight.cpp
     src/Extention.cpp
     src/FrameBuffer.cpp
@@ -41,6 +42,7 @@ set(YAGE_SRC
     src/ShaderLoader.cpp
     src/ShadowCubeMapArray.cpp
     src/ShadowMapArray.cpp
+    src/SkyBox.cpp
     src/SpotLight.cpp
     src/Texture.cpp
     src/TGAImage.cpp
@@ -53,6 +55,7 @@ set(YAGE_HEADERS
     include/Camera.h
     include/Config.h
     include/configuration.h
+    include/CubeTexture.h
     include/DirectedLight.h
     include/Extention.h
     include/FrameBuffer.h
@@ -80,6 +83,7 @@ set(YAGE_HEADERS
     include/ShaderLoader.h
     include/ShadowCubeMapArray.h
     include/ShadowMapArray.h
+    include/SkyBox.h
     include/SpotLight.h
     include/Texture.h
     include/TGAImage.h

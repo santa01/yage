@@ -6,6 +6,7 @@
 #include "Vec3.h"
 #include "Quaternion.h"
 #include "PerspectiveProjection.h"
+#include "SkyBox.h"
 
 Camera::Camera() {
     this->initialize();
@@ -31,6 +32,10 @@ void Camera::setPosition(const Vec3& position) {
     this->translationMatrix.set(0, 3, -position.get(Vec3::X));
     this->translationMatrix.set(1, 3, -position.get(Vec3::Y));
     this->translationMatrix.set(2, 3, -position.get(Vec3::Z));
+
+    if (this->skyBox != NULL) {
+        this->skyBox->setPosition(position);
+    }
 }
 
 Vec3 Camera::getPosition() const {
@@ -143,4 +148,5 @@ void Camera::updateRotationMatrix(const Vec3& right, const Vec3& up, const Vec3&
 void Camera::initialize() {
     this->lookAt(Vec3::UNIT_Z);
     this->projection = new PerspectiveProjection();
+    this->skyBox = NULL;
 }

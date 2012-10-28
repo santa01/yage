@@ -60,6 +60,7 @@ GLuint ShaderLoader::shaderFromFile(const std::string& name, GLenum type) {
 
     file.seekg(0, std::ios::beg);
     file.read(shaderSource, sourceLength);
+    file.close();
     shaderSource[sourceLength] = 0;
 
     GLuint shader = glCreateShader(type);

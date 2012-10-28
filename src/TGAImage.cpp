@@ -6,7 +6,6 @@
 #include "Logger.h"
 
 TGAImage::TGAImage() {
-    this->format = GL_BGRA;
     memset(&this->header, 0, sizeof(this->header));
 }
 
@@ -15,8 +14,9 @@ TGAImage::TGAImage(const TGAImage& orig) {
     this->header = orig.header;
     
     if (orig.imageData != NULL) {
-        this->imageData = new char[orig.imageSize];
-        memcpy(&this->imageData, &orig.imageData, orig.imageSize);
+        this->imageDataSize = orig.imageDataSize;
+        this->imageData = new char[this->imageDataSize];
+        memcpy(&this->imageData, &orig.imageData, this->imageDataSize);
     }
 }
 
@@ -31,8 +31,9 @@ TGAImage& TGAImage::operator =(const TGAImage& orig) {
         delete[] this->imageData;
     }
     
-    this->imageData = new char[orig.imageSize];
-    memcpy(&this->imageData, &orig.imageData, orig.imageSize);
+    this->imageDataSize = orig.imageDataSize;
+    this->imageData = new char[this->imageDataSize];
+    memcpy(&this->imageData, &orig.imageData, this->imageDataSize);
     
     return *this;
 }
@@ -54,8 +55,21 @@ bool TGAImage::load(const std::string& name) {
 
     file.seekg(0, std::ios::beg);
     file.read((char*)&this->header, sizeof(this->header));
-    if (this->header.imageType != TGA_IMAGE_UNCOMPRESSED_TRUECOLOR) {    // TODO
+    if (this->header.imageType != TGA_IMAGE_UNCOMPRESSED_TRUECOLOR) {  // TODO
         return false;
+    }
+    
+    switch (this->header.imageSpec.depth) {
+        case 32:
+            this->format = GL_BGRA;
+            break;
+            
+        case 24:
+            this->format = GL_BGR;
+            break;
+            
+        default:
+            return false;  // TODO: handle other formats
     }
 
     file.seekg(0, std::ios::end);
@@ -64,17 +78,18 @@ bool TGAImage::load(const std::string& name) {
                      this->header.idLength +
                      this->header.colorMapSpec.colorMapLength *
                      this->header.colorMapSpec.colorMapEntrySize;
-    int dataLength = (footer.developerDirOffset ? footer.developerDirOffset :
-                     (footer.extentionAreaOffset ? footer.extentionAreaOffset :
-                     fileLength - sizeof(footer))) - dataOffset;
+    this->imageDataSize = (footer.developerDirOffset ? footer.developerDirOffset :
+                          (footer.extentionAreaOffset ? footer.extentionAreaOffset :
+                          fileLength - sizeof(footer))) - dataOffset;
     
     if (this->imageData != NULL) {
         delete[] this->imageData;
     }
     
-    this->imageData = new char[dataLength];
+    this->imageData = new char[this->imageDataSize];
     file.seekg(dataOffset, std::ios::beg);
-    file.read(this->imageData, dataLength);
+    file.read(this->imageData, this->imageDataSize);
+    file.close();
     
     return true;
 }

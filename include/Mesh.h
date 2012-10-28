@@ -63,13 +63,29 @@ class Mesh: public Renderable, public Movable, public Rotatable, public Scalable
             return this->rotationMatrix;
         }
         
-        void scaleX(float factor);
-        void scaleY(float factor);
-        void scaleZ(float factor);
+        void scaleX(float factor) {
+            this->scalingMatrix.set(0, 0, factor);
+        }
         
-        float getXFactor() const;
-        float getYFactor() const;
-        float getZFactor() const;
+        void scaleY(float factor) {
+            this->scalingMatrix.set(1, 1, factor);
+        }
+        
+        void scaleZ(float factor) {
+            this->scalingMatrix.set(2, 2, factor);
+        }
+        
+        float getXFactor() const {
+            return this->scalingMatrix.get(0, 0);
+        }
+        
+        float getYFactor() const {
+            return this->scalingMatrix.get(1, 1);
+        }
+        
+        float getZFactor() const {
+            return this->scalingMatrix.get(2, 2);
+        }
         
         void scale(float factor);
         

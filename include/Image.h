@@ -25,7 +25,7 @@ class Image {
 
     protected:
         int format;
-        int imageSize;
+        int imageDataSize;
         char* imageData;
 };
 

@@ -77,6 +77,7 @@ bool Mesh::load(const std::string& name) {
     int facesDataLength = header.textureOffset - header.facesOffset;
     this->facesData = new char[facesDataLength];
     file.read(this->facesData, facesDataLength);
+    file.close();
     
     glBindVertexArray(this->vao);
     
@@ -129,30 +130,6 @@ void Mesh::rotate(const Vec3& vector, float angle) {
     q.normalize();
     
     this->rotationMatrix = q.extractMat4();
-}
-
-void Mesh::scaleX(float factor) {
-    this->scalingMatrix.set(0, 0, factor);
-}
-
-void Mesh::scaleY(float factor) {
-    this->scalingMatrix.set(1, 1, factor);
-}
-
-void Mesh::scaleZ(float factor) {
-    this->scalingMatrix.set(2, 2, factor);
-}
-
-float Mesh::getXFactor() const {
-    return this->scalingMatrix.get(0, 0);
-}
-
-float Mesh::getYFactor() const {
-    return this->scalingMatrix.get(1, 1);
-}
-
-float Mesh::getZFactor() const {
-    return this->scalingMatrix.get(2, 2);
 }
 
 void Mesh::scale(float factor) {
