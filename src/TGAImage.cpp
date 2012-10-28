@@ -1,4 +1,3 @@
-#include <GL/gl.h>
 #include <memory.h>
 #include <fstream>
 #include <string>

@@ -1,7 +1,7 @@
 #ifndef SHADERLOADER_H
 #define	SHADERLOADER_H
 
-#include <GL/gl.h>
+#include <global.h>
 #include <string>
 #include <vector>
 

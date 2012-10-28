@@ -1,7 +1,3 @@
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-#include <GL/glext.h>
-
 #include "Texture.h"
 #include "Image.h"
 #include "Extention.h"

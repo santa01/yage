@@ -1,0 +1,23 @@
+#ifndef GLOBAL_H
+#define GLOBAL_H
+
+#cmakedefine HAVE_XRANDR_H
+#ifdef HAVE_XRANDR_H
+# include <X11/extensions/Xrandr.h>
+#endif // HAVE_XRANDR_H
+
+#define GLCOREARB_PROTOTYPES
+#include <GL/glcorearb.h>
+
+#cmakedefine WIN32 1
+#cmakedefine UNIX 1
+
+#if WIN32
+# include <GL/wglext.h>
+#elif UNIX
+# include <X11/Xlib.h>
+# include <GL/glx.h>
+# include <GL/glxext.h>
+#endif
+
+#endif // GLOBAL_H

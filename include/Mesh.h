@@ -1,7 +1,7 @@
 #ifndef MESH_H
 #define	MESH_H
 
-#include <GL/gl.h>
+#include <global.h>
 #include <stdint.h>
 #include <string>
 
