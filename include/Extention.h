@@ -1,7 +1,7 @@
 #ifndef EXTENTION_H
 #define	EXTENTION_H
 
-#include <X11/Xlib.h>
+#include <global.h>
 #include <string>
 
 class Extention {

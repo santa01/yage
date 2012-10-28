@@ -1,11 +1,10 @@
 #ifndef RENDEREFFECT_H
 #define	RENDEREFFECT_H
 
-#include <GL/gl.h>
+#include <global.h>
 #include <vector>
 #include <string>
 
-#include "RenderEffect.h"
 #include "Mat4.h"
 #include "Vec3.h"
 #include "Light.h"

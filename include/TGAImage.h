@@ -3,6 +3,7 @@
 #ifndef TGAIMAGE_H
 #define	TGAIMAGE_H
 
+#include <global.h>
 #include <stdint.h>
 #include <string>
 
