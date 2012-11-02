@@ -18,7 +18,7 @@ ShadowMapArray::ShadowMapArray(int dimension) {
     this->initialize();
 }
 
-void ShadowMapArray::setDimention(int dimension) {
+void ShadowMapArray::setDimension(int dimension) {
     this->width = dimension;
     this->height = dimension;
     

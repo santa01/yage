@@ -55,7 +55,7 @@ bool TGAImage::load(const std::string& name) {
 
     file.seekg(0, std::ios::beg);
     file.read((char*)&this->header, sizeof(this->header));
-    if (this->header.imageType != TGA_IMAGE_UNCOMPRESSED_TRUECOLOR) {  // TODO
+    if (this->header.imageType != TGA_IMAGE_UNCOMPRESSED_TRUECOLOR) {  // TODO: Implement RLE decoding
         return false;
     }
     

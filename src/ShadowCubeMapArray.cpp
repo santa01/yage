@@ -31,7 +31,7 @@ ShadowCubeMapArray::ShadowCubeMapArray(int dimension) {
     this->initialize();
 }
 
-void ShadowCubeMapArray::setDimention(int dimension) {
+void ShadowCubeMapArray::setDimension(int dimension) {
     this->width = dimension;
     this->height = dimension;
     

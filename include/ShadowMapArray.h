@@ -9,8 +9,8 @@ class ShadowMapArray: public Texture {
         ShadowMapArray();
         ShadowMapArray(int dimension);
 
-        void setDimention(int dimention);
-        int getDimention() const {
+        void setDimension(int dimension);
+        int getDimension() const {
             return this->width;
         }
 

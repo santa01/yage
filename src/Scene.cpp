@@ -37,10 +37,10 @@ Scene::Scene():
     this->depthEffect->attachShader("shaders/shadowmap.fs");
     this->effects.insert(this->depthEffect);
     
-    this->depthMaps.setDimention(SHADOW);
+    this->depthMaps.setDimension(SHADOW);
     this->depthMaps.bind(RenderEffect::SHADOW_MAP_ARRAY_TEXTURE_UNIT);
     
-    this->depthPointLightMaps.setDimention(SHADOW);
+    this->depthPointLightMaps.setDimension(SHADOW);
     this->depthPointLightMaps.bind(RenderEffect::SHADOW_CUBE_MAP_ARRAY_TEXTURE_UNIT);
 }
 

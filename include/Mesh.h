@@ -14,8 +14,8 @@
 
 #pragma pack(push, 1)
 
-typedef struct {
-    int8_t magic[4];          // Should be "MESH"
+struct MeshHeader {
+    int8_t magic[4];            // Should be "MESH"
     int8_t version;
     int8_t padding[3];
     int32_t vcOffset;
@@ -23,15 +23,15 @@ typedef struct {
     int32_t uvOffset;
     int32_t facesOffset;
     int32_t textureOffset;
-} MeshHeader;
+};
 
 // Padded to be used as an array element in std140 layout uniform blocks
-typedef struct {
+struct MaterialData {
     float diffuseIntensity;     // 4 bytes
     float specularIntensity;    // 4 bytes
     float specularExponent;     // 4 bytes
     char _padding[4];           // 4 bytes
-} MaterialData;                 // 16 bytes total
+};                 // 16 bytes total
 
 #pragma pack(pop)
 
@@ -113,6 +113,8 @@ class Mesh: public Renderable, public Movable, public Rotatable, public Scalable
         GLuint vao;
         char* vertexData;
         char* facesData;
+        int vertexNumber;
+        int facesNumber;
         
         void initialize();
 };

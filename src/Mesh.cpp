@@ -72,10 +72,12 @@ bool Mesh::load(const std::string& name) {
     
     int vertexDataLength = header.facesOffset - sizeof(MeshHeader);
     this->vertexData = new char[vertexDataLength];
+    this->vertexNumber = vertexDataLength / sizeof(float) / 3;  // Three components per vertex
     file.read(this->vertexData, vertexDataLength);
     
     int facesDataLength = header.textureOffset - header.facesOffset;
     this->facesData = new char[facesDataLength];
+    this->facesNumber = facesDataLength / sizeof(int);
     file.read(this->facesData, facesDataLength);
     file.close();
     
@@ -152,7 +154,7 @@ void Mesh::render() {
     }
 
     glBindVertexArray(this->vao);
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLvoid*)0);  // TODO
+    glDrawElements(GL_TRIANGLES, this->facesNumber, GL_UNSIGNED_INT, (GLvoid*)0);
     glBindVertexArray(0);
 }
 
@@ -169,4 +171,6 @@ void Mesh::initialize() {
     
     this->facesData = NULL;
     this->vertexData = NULL;
+    this->vertexNumber = 0;
+    this->facesNumber = 0;
 }

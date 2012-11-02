@@ -11,8 +11,8 @@ class ShadowCubeMapArray: public Texture {
         ShadowCubeMapArray();
         ShadowCubeMapArray(int dimension);
 
-        void setDimention(int dimention);
-        int getDimention() const {
+        void setDimension(int dimension);
+        int getDimension() const {
             return this->width;
         }
 

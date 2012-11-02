@@ -48,14 +48,22 @@ class SkyBox: public Renderable, public Movable, public Scalable {
         void render();  
 
     private:
+        enum {
+            VERTEX_BUFFER,
+            ELEMENT_BUFFER
+        };
+
         SkyBox(const SkyBox& orig);
         SkyBox& operator =(const SkyBox&);
 
         Mat4 translationMatrix;
         Mat4 scalingMatrix;
         
-        GLuint vertexBuffer;
+        GLuint buffers[2];
+        GLuint vao;
+        
         static const float vertices[];
+        static const int indices[];
         
         void initialize();
 };
