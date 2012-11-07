@@ -7,6 +7,10 @@
 #include "Movable.h"
 #include "Rotatable.h"
 
+/**
+ * \class Camera
+ * \brief Represents a first-person camera
+ */
 class Camera: public Frustum, public Movable, public Rotatable {
     public:
         Camera();

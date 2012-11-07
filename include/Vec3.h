@@ -1,6 +1,10 @@
 #ifndef VEC3_H
 #define	VEC3_H
 
+/**
+ * \class Vec3
+ * \brief Represents a 3-dimensional vector (X, Y, Z)
+ */
 class Vec3 {
     public:
         static const int X = 0;
