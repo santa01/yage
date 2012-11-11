@@ -17,18 +17,16 @@
 OpenGLWindow::OpenGLWindow() {
     this->width = 640;
     this->height = 480;
-    this->captured = false;
-    this->running = true;
-    this->frameTime = 0.0f;
+    
+    this->initialize();
 }
 
 OpenGLWindow::OpenGLWindow(int width, int height, const std::string& caption):
         caption(caption) {
     this->width = width;
     this->height = height;
-    this->captured = false;
-    this->running = true;
-    this->frameTime = 0.0f;
+
+    this->initialize();
 }
 
 OpenGLWindow::~OpenGLWindow() {
@@ -67,7 +65,7 @@ void OpenGLWindow::captureMouse(bool capture) {
     captureEvent.data.l[1] = capture;
 
     XWarpPointer(this->display, None, this->window, 0, 0, 0, 0,
-        (this->width >> 1), (this->height >> 1));
+            (this->width >> 1), (this->height >> 1));
 
     XSendEvent(this->display, this->window, True, NoEventMask, (XEvent*)&captureEvent);
 }
@@ -108,7 +106,7 @@ void OpenGLWindow::run() {
                 case MotionNotify:
                     if (this->captured) {
                         this->onMouseMotionEvent(event.xmotion.x - (this->width >> 1),
-                            event.xmotion.y - (this->height >> 1));
+                                event.xmotion.y - (this->height >> 1));
                     } else {
                         this->onMouseMotionEvent(event.xmotion.x, event.xmotion.y);
                     }
@@ -143,9 +141,15 @@ void OpenGLWindow::run() {
     this->destroyWindow();
 }
 
+void OpenGLWindow::initialize() {
+    this->captured = false;
+    this->running = true;
+    this->frameTime = 0.0f;
+}
+
 void OpenGLWindow::initWindow() {
     this->display = XOpenDisplay(NULL);
-    if (!this->display) {
+    if (this->display == NULL) {
         Logger::getInstance().log(Logger::LOG_ERROR, "cannot open display");
         exit(EXIT_FAILURE);
     }
@@ -171,6 +175,8 @@ void OpenGLWindow::initWindow() {
             DefaultScreen(this->display), fbAttributes, &fbConfigsCount);
     if (fbConfigs == NULL) {
         Logger::getInstance().log(Logger::LOG_ERROR, "no decent framebuffer config found");
+
+        XCloseDisplay(this->display);
         exit(EXIT_FAILURE);
     }
     
@@ -180,15 +186,17 @@ void OpenGLWindow::initWindow() {
     if (Extention::isSupported(this->display, "GLX_ARB_multisample")) {
         Logger::getInstance().log(Logger::LOG_INFO, "GLX_ARB_multisample supported, looking for a decent framebuffer config");
         
-        int samples, sampleBuffers, id, samplesBest = 0, sampleBuffersBest = 0, index = 0;
+        int samples, sampleBuffers, id;
+        int samplesBest = 0, sampleBuffersBest = 0, index = 0;
         for (int i = 0; i < fbConfigsCount; i++) {
             glXGetFBConfigAttrib(this->display, fbConfigs[i], GLX_FBCONFIG_ID, &id);
             glXGetFBConfigAttrib(this->display, fbConfigs[i], GLX_SAMPLES, &samples);
             glXGetFBConfigAttrib(this->display, fbConfigs[i], GLX_SAMPLE_BUFFERS, &sampleBuffers);
             
-            Logger::getInstance().log(Logger::LOG_INFO, "  #%d 0x%04x: %d samples, %d sample buffes", i + 1, id, samples, sampleBuffers);
+            Logger::getInstance().log(Logger::LOG_INFO, "  #%d 0x%04x: %d samples, %d sample buffes",
+                    i + 1, id, samples, sampleBuffers);
 
-            if (samples > samplesBest || sampleBuffers > sampleBuffersBest) {
+            if (samples >= samplesBest && sampleBuffers >= sampleBuffersBest) {
                 samplesBest = samples;
                 sampleBuffersBest = sampleBuffers;
                 index = i;
@@ -204,8 +212,10 @@ void OpenGLWindow::initWindow() {
     XFree(fbConfigs);
 
     XVisualInfo *visualInfo = glXGetVisualFromFBConfig(this->display, fbConfig);
-    if (!visualInfo) {
+    if (visualInfo == NULL) {
         Logger::getInstance().log(Logger::LOG_ERROR, "cannot choose visual");
+
+        XCloseDisplay(this->display);
         exit(EXIT_FAILURE);    
     }
 
@@ -239,15 +249,25 @@ void OpenGLWindow::initWindow() {
     this->glxContext = glXCreateContextAttribsARB(this->display, fbConfig,
            NULL, True, contextAttributes);
 
-    if (!this->glxContext) {
+    if (this->glxContext == NULL) {
+        Logger::getInstance().log(Logger::LOG_ERROR, "cannot create OpenGL 3.3 context");
+        
         XDestroyWindow(this->display, this->window);
         XFreeColormap(this->display, this->colormap);
         XCloseDisplay(this->display);
-
-        Logger::getInstance().log(Logger::LOG_ERROR, "cannot create OpenGL 3.3 context");
         exit(EXIT_FAILURE);
     }
 
+    if (!glXIsDirect(this->display, this->glxContext)) {
+        Logger::getInstance().log(Logger::LOG_ERROR, "direct rendering disabled");
+        
+        glXDestroyContext(this->display, this->glxContext);
+        XDestroyWindow(this->display, this->window);
+        XFreeColormap(this->display, this->colormap);
+        XCloseDisplay(this->display);
+        exit(EXIT_FAILURE);  
+    }
+    
     glXMakeCurrent(this->display, this->window, this->glxContext);
 }
 
