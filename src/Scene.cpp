@@ -51,8 +51,9 @@ Scene::~Scene() {
     glDeleteBuffers(2, this->buffers);
 }
 
-bool Scene::load(const std::string& name) {
-    // TODO
+bool Scene::load(const std::string& /*name*/) {
+    // TODO: implement
+    return false;
 }
 
 void Scene::setAmbientLightColor(const Vec3& color) {
