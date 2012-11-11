@@ -9,10 +9,12 @@
 
 class OpenGLWindow {
     public:
-        static const int KEY_PRESSED = 0;
-        static const int KEY_RELEASED = 1;
-        static const int BUTTON_PRESSED = 2;
-        static const int BUTTON_RELEASED = 3;
+        enum {
+            KEY_PRESSED,
+            KEY_RELEASED,
+            BUTTON_PRESSED,
+            BUTTON_RELEASED,
+        };
 
         OpenGLWindow();
         OpenGLWindow(int width, int height, const std::string& caption);
@@ -68,6 +70,8 @@ class OpenGLWindow {
         OpenGLWindow(const OpenGLWindow&);
         OpenGLWindow& operator =(const OpenGLWindow&);
 
+        void initialize();
+        
         void initWindow();
         void destroyWindow();
 };
