@@ -48,19 +48,22 @@ configure_file(global.h.in global.h) # preprocess global.h.in header
 
 # enable build-time warnings
 set(ENABLE_WARNINGS TRUE CACHE BOOL "Enable build-time warnings")
-if (ENABLE_WARNINGS)
-    if(MSVC)
+if(MSVC)
+    if(ENABLE_WARNINGS)
         # Force to always compile with W4
         if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
             string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
         else()
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
         endif()
-    elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-        # Update if necessary
+    endif()
+elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+    # Update if necessary
+    if(ENABLE_WARNINGS)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
     endif()
-endif(ENABLE_WARNINGS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
 
 # yage library
 add_library(${PROJECT} SHARED ${YAGE_SRC} ${YAGE_HEADERS})
