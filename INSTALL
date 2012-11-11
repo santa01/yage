@@ -1,1 +1,64 @@
-TODO: Install instructions
+System requirements
+===================
+
+* GNU/Linux distribution with C++11 compatible compiler
+* Support for OpenGL 3.3
+* GLX 1.4 or higher
+
+
+Getting latest source code
+==========================
+
+HTTP: git clone https://github.com/santa01/yage.git
+GIT:  git clone git://github.com/santa01/yage.git
+
+
+Build-time dependencies
+=======================
+
+* CMake
+* X11 development headers (for OS with X11 Window system)
+* OpenGL shared libraries (usually priovided with your graphics card driver)
+
+
+Building
+========
+
+CMake build system prohibits building in source root. Typical build sequence
+will look like this:
+
+    $ mkdir build
+    $ cd build
+    $ cmake -DCMAKE_INSTALL_PREFIX=/usr /path/to/yage/sources
+
+For bumblebee users it would be better to link against nVidia's libGL.so:
+
+    $ cmake -DYAGE_OPENGL=/usr/lib/nvidia-current/libGL.so ${OTHER_OPTIONS} /path/to/yage/sources
+
+Build the project:
+
+    $ make
+
+Make documentation (Doxygen is required, Graphviz is optional):
+
+    $ make docs
+
+Installing
+==========
+
+CMAKE_INSTALL_PREFIX parameter determines install prefix where binaries
+(e.g. ./lib/libyage.so) will be installed.
+
+You can either make package for your system package manager
+
+    $ make package
+
+or install it using traditional way
+
+    $ make install
+
+Troubleshooting
+===============
+
+Report all bugs, feature requests and "to-do" items here:
+  <https://github.com/santa01/yage/issues>
