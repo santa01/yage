@@ -15,15 +15,18 @@ DirectedLight::~DirectedLight() {
 }
 
 float DirectedLight::getXAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 float DirectedLight::getYAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 float DirectedLight::getZAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 void DirectedLight::rotate(const Vec3& vector, float angle) {
