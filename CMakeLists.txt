@@ -97,7 +97,7 @@ if(DOXYGEN_FOUND)
 endif(DOXYGEN_FOUND)
 
 if(MAKE_API_DOCS)
-    make_directory("${CMAKE_BINARY_DIR}/docs")
+    make_directory("${CMAKE_BINARY_DIR}/doc")
     add_custom_target(docs
         COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_BINARY_DIR}/Doxyfile"
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
