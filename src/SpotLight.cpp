@@ -18,15 +18,18 @@ SpotLight::~SpotLight() {
 }
 
 float SpotLight::getXAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 float SpotLight::getYAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 float SpotLight::getZAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 void SpotLight::rotate(const Vec3& vector, float angle) {

@@ -5,6 +5,7 @@
 Config::Config() {
 }
 
-bool Config::load(const std::string& name) {
-    // TODO
+bool Config::load(const std::string& /*name*/) {
+    // TODO: implement
+    return false;
 }

@@ -36,15 +36,18 @@ Vec3 Camera::getPosition() const {
 }
 
 float Camera::getXAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 float Camera::getYAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 float Camera::getZAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 void Camera::rotate(const Vec3& vector, float angle) {

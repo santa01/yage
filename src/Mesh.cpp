@@ -107,15 +107,18 @@ Vec3 Mesh::getPosition() const {
 }
 
 float Mesh::getXAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 float Mesh::getYAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 float Mesh::getZAngle() const {
-    // TODO
+    // TODO: implement
+    return 0.0f;
 }
 
 void Mesh::rotate(const Vec3& vector, float angle) {
