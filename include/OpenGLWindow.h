@@ -1,11 +1,15 @@
 #ifndef OPENGLWINDOW_H
 #define OPENGLWINDOW_H
 
-#include <X11/Xlib.h>
-#include <GL/glx.h>
+#include <global.h>
 #include <ctime>
 #include <string>
 #include <vector>
+
+#if UNIX
+# include <X11/Xlib.h>
+# include <X11/extensions/Xrandr.h>
+#endif
 
 class OpenGLWindow {
     public:
