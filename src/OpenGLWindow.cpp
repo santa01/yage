@@ -74,7 +74,7 @@ void OpenGLWindow::run() {
     XEvent event;
     struct timeval startFrameTime, endFrameTime;
 
-    Logger::getInstance().log(Logger::LOG_INFO, "initializing");
+    Logger::getInstance().log(Logger::LOG_INFO, "Initializing");
     this->initWindow();
     this->onInit();
 
@@ -160,7 +160,7 @@ void OpenGLWindow::run() {
                 (endFrameTime.tv_usec - startFrameTime.tv_usec) / 1000000.0f;
     }
     
-    Logger::getInstance().log(Logger::LOG_INFO, "cleaning up");
+    Logger::getInstance().log(Logger::LOG_INFO, "Cleaning up");
     this->onCleanup();
     this->destroyWindow();
 }
@@ -182,7 +182,7 @@ void OpenGLWindow::initialize() {
 void OpenGLWindow::initWindow() {
     this->display = XOpenDisplay(NULL);
     if (this->display == NULL) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "cannot open display");
+        Logger::getInstance().log(Logger::LOG_ERROR, "Cannot open display");
         exit(EXIT_FAILURE);
     }
 
@@ -244,7 +244,7 @@ void OpenGLWindow::initWindow() {
             contextAttributes);
 
     if (this->glxContext == NULL) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "cannot create OpenGL 3.3 context");
+        Logger::getInstance().log(Logger::LOG_ERROR, "Cannot create OpenGL 3.3 context");
         
         XDestroyWindow(this->display, this->window);
         XFreeColormap(this->display, this->colormap);
@@ -253,7 +253,7 @@ void OpenGLWindow::initWindow() {
     }
 
     if (!glXIsDirect(this->display, this->glxContext)) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "direct rendering disabled");
+        Logger::getInstance().log(Logger::LOG_ERROR, "Direct rendering disabled");
         
         glXDestroyContext(this->display, this->glxContext);
         XDestroyWindow(this->display, this->window);

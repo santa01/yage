@@ -12,7 +12,7 @@ GLuint ShaderLoader::createShader(const std::string& name) {
     if (ext.compare(".gs") == 0) return ShaderLoader::shaderFromFile(name, GL_GEOMETRY_SHADER);
     if (ext.compare(".vs") == 0) return ShaderLoader::shaderFromFile(name, GL_VERTEX_SHADER);
 
-    Logger::getInstance().log(Logger::LOG_WARNING, "cannot determine type of %s", name.c_str());
+    Logger::getInstance().log(Logger::LOG_WARNING, "Cannot determine type of %s", name.c_str());
     return 0;
 }
 
@@ -45,7 +45,7 @@ GLuint ShaderLoader::createProgram(const std::vector<GLuint>& shaders) {
 GLuint ShaderLoader::shaderFromFile(const std::string& name, GLenum type) {
     std::fstream file(name.c_str(), std::ios::binary | std::ios::in);
     if (!file.good()) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "cannot open file %s", name.c_str());
+        Logger::getInstance().log(Logger::LOG_ERROR, "Cannot open file %s", name.c_str());
         return 0;
     }
 
@@ -72,7 +72,7 @@ GLuint ShaderLoader::shaderFromFile(const std::string& name, GLenum type) {
         GLchar* infoLog = new GLchar[infoLogLength + 1];
         glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
         
-        Logger::getInstance().log(Logger::LOG_ERROR, "in file %s: %s", name.c_str(), infoLog);
+        Logger::getInstance().log(Logger::LOG_ERROR, "In file %s: %s", name.c_str(), infoLog);
         delete[] infoLog;
     }
     
