@@ -2,6 +2,9 @@ System requirements
 ===================
 
 * GNU/Linux distribution with C++11 compatible compiler
+    * gcc 4.3 is minimum requirement
+    * gcc 4.7+ is recommended
+* CMake, version 2.8+
 * Support for OpenGL 3.3
 * GLX 1.4 or higher
 
