@@ -1,8 +1,4 @@
 #define GLX_GLXEXT_PROTOTYPES
-#include <X11/Xlib.h>
-#include <X11/extensions/Xrandr.h>
-#include <GL/glx.h>
-#include <GL/glxext.h>
 #include <sys/time.h>
 #include <memory.h>
 #include <cstdlib>

@@ -28,18 +28,18 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${YAGE_CXX11_FLAGS}")
 find_package(X11 REQUIRED X11 Xrandr)
 set(INCLUDE ${INCLUDE} ${X11_INCLUDE_DIR})
 set(LIBRARIES ${LIBRARIES} ${X11_X11_LIB})
+if(NOT EXISTS ${X11_Xrandr_INCLUDE_PATH})
+    message(FATAL_ERROR "XRandR development headers required")
+endif()
 
 find_package(OpenGL REQUIRED gl)
 set(INCLUDE ${INCLUDE} ${OPENGL_INCLUDE_DIR})
+set(LIBRARIES ${LIBRARIES} ${X11_Xrandr_LIB})
 set(YAGE_OPENGL ${OPENGL_gl_LIBRARY} CACHE FILEPATH "OpenGL library used for building yage (useful for bumblebee users)")
 set(LIBRARIES ${LIBRARIES} ${YAGE_OPENGL})
 
 # find own sources
 find_package(yage REQUIRED)
-
-# TODO check required includes and configure variables
-# include(CheckIncludeFileCXX)
-# check_include_file_cxx("X11/extensions/Xrandr.h" HAVE_XRANDR_H)
 
 # where to search sources and headers
 set(INCLUDE ${INCLUDE} ${CMAKE_BINARY_DIR})
@@ -47,8 +47,6 @@ include_directories(${INCLUDE})
 # override system includes (for OpenGL headers)
 include_directories(BEFORE SYSTEM ${YAGE_INCLUDE_DIR})
 
-# configure some headers
-set(HAVE_XRANDR_H ${X11_Xrandr_FOUND})
 configure_file(global.h.in global.h) # preprocess global.h.in header
 
 # enable build-time warnings
