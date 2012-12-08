@@ -3,7 +3,7 @@
 #include "configuration.h"
 
 Game::Game():
-        renderer(WIDTH, HEIGHT, "Game") {
+        renderer(WIDTH, HEIGHT, "Game", FULLSCREEN) {
 }
 
 void Game::start() {
