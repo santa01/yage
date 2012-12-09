@@ -8,21 +8,15 @@ System requirements
 * Support for OpenGL 3.3
 * GLX 1.4 or higher
 
-
-Getting latest source code
-==========================
-
-HTTP: git clone https://github.com/santa01/yage.git
-GIT:  git clone git://github.com/santa01/yage.git
-
-
 Build-time dependencies
 =======================
 
 * CMake
-* X11 development headers (for OS with X11 Window system)
-* OpenGL shared libraries (usually priovided with your graphics card driver)
-
+* X11 development headers
+* XrandR development headers
+* OpenGL development headers
+* Doxygen (optional)
+* Graphviz (optional)
 
 Building
 ========
@@ -59,9 +53,3 @@ You can either make package for your system package manager
 or install it using traditional way
 
     $ make install
-
-Troubleshooting
-===============
-
-Report all bugs, feature requests and "to-do" items here:
-  <https://github.com/santa01/yage/issues>
