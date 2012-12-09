@@ -12,7 +12,7 @@
 class Renderer: public OpenGLWindow {
     public:
         Renderer();
-        Renderer(int width, int height, const std::string& caption);
+        Renderer(int width, int height, const std::string& caption, bool fullScreen);
     
     private:
         void onMouseMotionEvent(int x, int y);

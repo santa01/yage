@@ -38,7 +38,7 @@ Mesh::~Mesh() {
 bool Mesh::load(const std::string& name) {
     std::fstream file(name.c_str(), std::ios::binary | std::ios::in);
     if (!file.good()) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "cannot open file %s", name.c_str());
+        Logger::getInstance().log(Logger::LOG_ERROR, "Cannot open file %s", name.c_str());
         return false;
     }
 

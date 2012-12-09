@@ -21,7 +21,7 @@ class OpenGLWindow {
         };
 
         OpenGLWindow();
-        OpenGLWindow(int width, int height, const std::string& caption);
+        OpenGLWindow(int width, int height, const std::string& caption, bool fullScreen);
         virtual ~OpenGLWindow();
 
         void getKeysStates(std::vector<bool>& keysStates) const;
@@ -40,7 +40,8 @@ class OpenGLWindow {
         }
         
         void terminate() {
-            this->running = false;
+            // Checked in RRScreenChangeNotify event handler
+            this->terminateRequest = true;
         }
 
         void run();
@@ -56,20 +57,32 @@ class OpenGLWindow {
         std::string caption;
         int width;
         int height;
+        bool fullScreen;
         
     private:
-        Window window;
+        Window window, rootWindow;
         Display *display;
         GLXContext glxContext;
+        GLXFBConfig fbConfig;
+        XVisualInfo *visualInfo;
         Colormap colormap;
-        
+        SizeID resolutionID, oldResolutionID;
+
         Atom wmDeleteWindow;
         Atom wmCaptureMouse;
+        Atom wmState;
+        Atom wmFullScreen;
 
+        int xrandrEventBase;
         int oldX, oldY;
+        float frameTime;
+
         bool captured;
         bool running;
-        float frameTime;
+        bool msaaEnabled;
+        bool nativeResolutuionEnabled;
+        bool terminateRequest;
+        bool toggleFullScreenRequest;
         
         OpenGLWindow(const OpenGLWindow&);
         OpenGLWindow& operator =(const OpenGLWindow&);
@@ -78,6 +91,13 @@ class OpenGLWindow {
         
         void initWindow();
         void destroyWindow();
+
+        bool checkSupportedResolutions();
+        bool checkFrameBufferConfigs();
+        void initVSync();
+        void initOpenGL();
+
+        void toggleFullScreen();
 };
 
 #endif /* OPENGLWINDOW_H */
