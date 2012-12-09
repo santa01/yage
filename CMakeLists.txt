@@ -70,7 +70,7 @@ target_link_libraries(${PROJECT} ${LIBRARIES})
 # TODO: remove executable
 link_directories("${CMAKE_INSTALL_PREFIX}/lib")
 set(EXE run_${PROJECT})
-set(EXE_SRC src/main.cpp)
+set(EXE_SRC main.cpp)
 add_executable(${EXE} ${EXE_SRC})
 target_link_libraries(${EXE} ${PROJECT})
 

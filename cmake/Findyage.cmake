@@ -10,69 +10,10 @@
 
 set(YAGE_DIR "${PROJECT_SOURCE_DIR}")
 
-set(YAGE_SRC
-    src/RenderEffect.cpp
-    src/TGAImage.cpp
-    src/Vec3.cpp
-    src/Image.cpp
-    src/Mat4.cpp
-    src/Rotatable.cpp
-    src/Camera.cpp
-    src/Scene.cpp
-    src/DirectedLight.cpp
-    src/Scalable.cpp
-    src/Quaternion.cpp
-    src/Texture.cpp
-    src/Frustum.cpp
-    src/Extention.cpp
-    src/Mat3.cpp
-    src/Game.cpp
-    src/Movable.cpp
-    src/Renderable.cpp
-    src/Light.cpp
-    src/Mesh.cpp
-    src/OpenGLWindow.cpp
-    src/Renderer.cpp
-    src/Logger.cpp
-    src/SpotLight.cpp
-    src/ShaderLoader.cpp
-    src/PointLight.cpp
-    src/Vec4.cpp
-    src/Config.cpp
-)
+aux_source_directory("${YAGE_DIR}/src" YAGE_SRC)
 set(YAGE_SRC_FOUND "TRUE")
 
-set(YAGE_HEADERS
-    include/Rotatable.h
-    include/Mat4.h
-    include/configuration.h
-    include/TGAImage.h
-    include/Image.h
-    include/Logger.h
-    include/Mesh.h
-    include/Config.h
-    include/Mat3.h
-    include/Vec4.h
-    include/Scalable.h
-    include/Light.h
-    include/SpotLight.h
-    include/OpenGLWindow.h
-    include/Movable.h
-    include/DirectedLight.h
-    include/Quaternion.h
-    include/PointLight.h
-    include/Frustum.h
-    include/Camera.h
-    include/RenderEffect.h
-    include/Renderer.h
-    include/Vec3.h
-    include/Scene.h
-    include/Extention.h
-    include/Texture.h
-    include/Game.h
-    include/Renderable.h
-    include/ShaderLoader.h
-)
+file(GLOB YAGE_HEADERS "${YAGE_DIR}/include/*.h")
 set(YAGE_INCLUDE_DIR "${YAGE_DIR}/include")
 set(YAGE_HEADERS_FOUND "TRUE")
 
