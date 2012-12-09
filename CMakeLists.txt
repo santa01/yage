@@ -42,10 +42,8 @@ set(LIBRARIES ${LIBRARIES} ${YAGE_OPENGL})
 find_package(yage REQUIRED)
 
 # where to search sources and headers
-set(INCLUDE ${INCLUDE} ${CMAKE_BINARY_DIR})
+set(INCLUDE ${INCLUDE} ${CMAKE_BINARY_DIR} ${YAGE_INCLUDE_DIR})
 include_directories(${INCLUDE})
-# override system includes (for OpenGL headers)
-include_directories(BEFORE SYSTEM ${YAGE_INCLUDE_DIR})
 
 configure_file(global.h.in global.h) # preprocess global.h.in header
 
