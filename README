@@ -1,1 +1,38 @@
-TODO: readme
+General information
+===================
+
+Yage is an open-source game engine based on OpenGL
+
+
+Getting latest source code
+==========================
+
+HTTP: git clone https://github.com/santa01/yage.git
+GIT:  git clone git://github.com/santa01/yage.git
+
+
+Package dependencies
+=======================
+
+* X11 shared libraries
+* XrandR shared libraries
+* OpenGL shared libraries (usually priovided with your graphics card driver)
+
+
+Building
+========
+
+See INSTALL for details
+
+
+Troubleshooting
+===============
+
+Report all bugs, feature requests and TODO's here:
+  <https://github.com/santa01/yage/issues>
+
+
+Licensing and copyright
+=======================
+
+Yage is licensed under MIT license, see COPYING for details
