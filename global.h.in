@@ -1,8 +1,9 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#define GLCOREARB_PROTOTYPES
-#include <GL/glcorearb.h>
+#define GL_GLEXT_PROTOTYPES 1
+#include <GL/gl.h>
+#include <GL/glext.h>
 
 #cmakedefine WIN32 1
 #cmakedefine UNIX 1

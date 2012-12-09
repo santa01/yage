@@ -72,9 +72,6 @@ set(YAGE_HEADERS
     include/Game.h
     include/Renderable.h
     include/ShaderLoader.h
-    include/GL/glcorearb.h
-    include/GL/glxext.h
-    include/GL/wglext.h
 )
 set(YAGE_INCLUDE_DIR "${YAGE_DIR}/include")
 set(YAGE_HEADERS_FOUND "TRUE")
