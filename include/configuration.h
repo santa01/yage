@@ -3,10 +3,13 @@
 
 #define WIDTH           800
 #define HEIGHT          600
+#define FULLSCREEN      0
+#define VSYNC           0       // 0 - disabled, 1 - enabled, 2 - enabled adaptive
 #define FOV             70
 #define ANISOTROPY      16
+#define MSAA            0
 
-#define VERBOSE         2
+#define VERBOSE         2       // 0 - error, 1 - warning, 2 - info
 
 #define FORWARD_SPEED   4.0
 #define BACKWARD_SPEED  2.0

@@ -20,8 +20,8 @@ Renderer::Renderer():
     this->cameraVerticalAngle = 0.0f;
 }
 
-Renderer::Renderer(int width, int height, const std::string& caption):
-        OpenGLWindow(width, height, caption) {
+Renderer::Renderer(int width, int height, const std::string& caption, bool fullScreen):
+        OpenGLWindow(width, height, caption, fullScreen) {
     this->cameraVerticalAngle = 0.0f;
 }
 
@@ -51,13 +51,6 @@ void Renderer::onKeyEvent(int state, int keycode) {
 }
 
 void Renderer::onInit() {
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CW);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    
-    glViewport(0, 0, (GLsizei)this->width, (GLsizei)this->height);
-    
     this->scene = new Scene();
 
     TGAImage image;
@@ -104,6 +97,7 @@ void Renderer::onInit() {
     
     this->scene->setAmbientLightIntensity(0.2f);
     this->scene->getCamera().setPosition(1.5f, 1.5f, -5.0f);
+    this->scene->getCamera().setAspectRatio((float)this->width / this->height);
 
     this->captureMouse(true);
 }

@@ -84,8 +84,8 @@ void Scene::addLight(Light* light) {
         glBufferSubData(GL_UNIFORM_BUFFER, 16 + sizeof(data) * --lightsCount, sizeof(data), &data);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     } else {
-        Logger::getInstance().log(Logger::LOG_WARNING,
-                "maximum light sources count %d reached", Scene::MAX_LIGHTS);
+        Logger::getInstance().log(Logger::LOG_WARNING, "Maximum light sources count %d reached",
+                Scene::MAX_LIGHTS);
     }
 }
 
