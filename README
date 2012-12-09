@@ -12,7 +12,7 @@ GIT:  git clone git://github.com/santa01/yage.git
 
 
 Package dependencies
-=======================
+====================
 
 * X11 shared libraries
 * XrandR shared libraries

@@ -8,6 +8,7 @@ System requirements
 * Support for OpenGL 3.3
 * GLX 1.4 or higher
 
+
 Build-time dependencies
 =======================
 
@@ -17,6 +18,7 @@ Build-time dependencies
 * OpenGL development headers
 * Doxygen (optional)
 * Graphviz (optional)
+
 
 Building
 ========
@@ -39,6 +41,7 @@ Build the project:
 Make documentation (Doxygen is required, Graphviz is optional):
 
     $ make docs
+
 
 Installing
 ==========
