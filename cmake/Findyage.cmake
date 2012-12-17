@@ -12,7 +12,9 @@ set(YAGE_DIR "${PROJECT_SOURCE_DIR}")
 
 set(YAGE_SRC
     src/Camera.cpp
+    src/CommandParser.cpp
     src/Config.cpp
+    src/DeveloperConsole.cpp
     src/DirectedLight.cpp
     src/Extention.cpp
     src/FrameBuffer.cpp
@@ -51,8 +53,10 @@ set(YAGE_SRC_FOUND "TRUE")
 
 set(YAGE_HEADERS
     include/Camera.h
+    include/CommandParser.h
     include/Config.h
     include/configuration.h
+    include/DeveloperConsole.h
     include/DirectedLight.h
     include/Extention.h
     include/FrameBuffer.h
