@@ -2,22 +2,16 @@
 #define	POINTLIGHT_H
 
 #include "Light.h"
-#include "Movable.h"
-#include "Vec3.h"
+#include "Projection.h"
+#include "PerspectiveProjection.h"
 
-class PointLight: public Light, public Movable {
+class PointLight: public Light {
     public:
         PointLight();
         ~PointLight();
-        
-        using Movable::setPosition;
-        
-        void setPosition(const Vec3& position) {
-            this->position = position;
-        }
-        
-        Vec3 getPosition() const {
-            return this->position;
+
+        const Projection* getShadowProjection() const {
+            return this->shadowProjection;
         }
 
         LightData getLightData() const;
@@ -28,10 +22,12 @@ class PointLight: public Light, public Movable {
 
         void setFalloff(float falloff) {
             this->falloff = falloff;
+            this->valid = false;
         }
 
     private:
-        Vec3 position;        
+        PerspectiveProjection* shadowProjection;
+        
         float falloff;
 };
 

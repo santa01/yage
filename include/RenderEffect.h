@@ -11,10 +11,14 @@
 
 class RenderEffect {
     public:
-        static const int DIFFUSE_TEXTURE_UNIT = 0;
-        static const int SPECULAR_TEXTURE_UNIT = 1;
+        static const unsigned int MAX_LIGHTS = 16;
+        static const int SHADOW_MAP_ARRAY_TEXTURE_UNIT = 0;
+        static const int SHADOW_CUBE_MAP_ARRAY_TEXTURE_UNIT = 1;
+        static const int DIFFUSE_TEXTURE_UNIT = 2;
+        static const int SPECULAR_TEXTURE_UNIT = 3;
         
         RenderEffect();
+        ~RenderEffect();
 
         void setName(const std::string& name) {
             this->name = name;
@@ -24,8 +28,10 @@ class RenderEffect {
             return this->name;
         }
         
-        void setMVPMatrix(const Mat4& mvpMatrix);
-        void setMVMatrix(const Mat4& mvMatrix);
+        void setModelViewPerspectiveMatrix(const Mat4& matrix);
+        void setLocalWorldMatrix(const Mat4& matrix);
+        void setLightModelViewPerspectiveMatrix(int lightIndex, const Mat4& matrix);
+
         void setCameraPosition(const Vec3& cameraPosition);
 
         void setMaterial(GLuint materialBuffer);
@@ -43,15 +49,16 @@ class RenderEffect {
         RenderEffect(const RenderEffect& orig);
         RenderEffect& operator =(const RenderEffect&);
 
-        std::vector<GLuint> shaderList;
+        std::vector<std::string> shaderList;
         std::string name;
         
         GLuint program;
         
-        GLint mvp;                              // vertex shader
-        GLint mv;                               // vertex shader
+        GLint modelViewPerspectiveMatrix;       // vertex shader
+        GLint localWorldMatrix;                 // vertex shader
         GLint cameraPosition;                   // fragment shader
-        GLint textureSampler;                   // fragment shader
+
+        GLint lightModelViewPerspectiveMatrices[RenderEffect::MAX_LIGHTS];   // vertex shader
 };
 
 #endif	/* RENDEREFFECT_H */

@@ -17,7 +17,7 @@ class Quaternion {
         
         Quaternion operator *(const Quaternion& quaternmion) const;
         
-        void normalize();
+        Quaternion& normalize();
         float length() const;
         
         float get(int index) const;

@@ -14,13 +14,13 @@ Mesh::Mesh() {
 }
 
 Mesh::Mesh(float x, float y, float z) {
-    this->setPosition(x, y, z);
     this->initialize();
+    this->setPosition(x, y, z);
 }
 
 Mesh::Mesh(const Vec3& position) {
-    this->setPosition(position);
     this->initialize();
+    this->setPosition(position);
 }
 
 Mesh::~Mesh() {
@@ -63,8 +63,11 @@ bool Mesh::load(const std::string& name) {
     data.specularIntensity = 1.0f;
     data.specularExponent = 50.0f;
     
+    int materialsCount = 1;
+    
     glBindBuffer(GL_UNIFORM_BUFFER, this->buffers[Mesh::MATERIAL_BUFFER]);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(data), &data);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(materialsCount), &materialsCount);
+    glBufferSubData(GL_UNIFORM_BUFFER, 16, sizeof(data), &data);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     
     int vertexDataLength = header.facesOffset - sizeof(MeshHeader);
@@ -166,13 +169,13 @@ void Mesh::render() {
     if (this->effect != NULL) {
         this->effect->enable();
         this->effect->setMaterial(this->buffers[Mesh::MATERIAL_BUFFER]);
-        this->effect->setMVMatrix(this->translationMatrix *
-                                  this->rotationMatrix *
-                                  this->scalingMatrix);
+        this->effect->setLocalWorldMatrix(this->translationMatrix *
+                                          this->rotationMatrix *
+                                          this->scalingMatrix);
     }
 
     glBindVertexArray(this->vao);
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLvoid*)0);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLvoid*)0);  // TODO
     glBindVertexArray(0);
 }
 
@@ -184,7 +187,7 @@ void Mesh::initialize() {
     memset(&data, 0, sizeof(data));
 
     glBindBuffer(GL_UNIFORM_BUFFER, this->buffers[Mesh::MATERIAL_BUFFER]);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(data), &data, GL_DYNAMIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, 16 + sizeof(data) * Mesh::MAX_MATERIALS, &data, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     
     this->facesData = NULL;

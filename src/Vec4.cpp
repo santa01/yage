@@ -1,8 +1,9 @@
-#define _ISOC99_SOURCE
 #include <cmath>
 
 #include "Vec4.h"
 #include "Vec3.h"
+
+const Vec4 Vec4::ZERO(0.0f, 0.0f, 0.0f, 0.0f);
 
 Vec4::Vec4() {
     this->vector[Vec4::X] = 0.0f;
@@ -66,6 +67,13 @@ bool Vec4::operator ==(const Vec4& vector) const {
 
 bool Vec4::operator !=(const Vec4& vector) const {
     return !(*this == vector);
+}
+
+Vec4 Vec4::operator -() const {
+    return Vec4(-this->vector[Vec4::X],
+                -this->vector[Vec4::Y],
+                -this->vector[Vec4::Z],
+                -this->vector[Vec4::W]);
 }
 
 float Vec4::dot(const Vec4& vector) const {

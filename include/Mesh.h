@@ -84,6 +84,8 @@ class Mesh: public Renderable, public Movable, public Rotatable, public Scalable
         static const int ELEMENT_BUFFER = 1;
         static const int MATERIAL_BUFFER = 2;
         
+        static const unsigned int MAX_MATERIALS = 16;
+        
         Mesh(const Mesh& orig);
         Mesh& operator =(const Mesh&);
 

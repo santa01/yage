@@ -22,6 +22,8 @@ class Renderer: public OpenGLWindow {
         void onCleanup();
         void onIdle();
         
+        // NOTE: Do not make scene attribute regular e.g. Scene scene;
+        // Scene requires deferred initialization in Renderer::onInit() after OpenGL context setup!
         Scene* scene;
         
         std::vector<bool> keysStates;

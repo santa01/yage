@@ -3,22 +3,39 @@
 
 #include <global.h>
 
-#include "Image.h"
-
 class Texture {
     public:
         Texture();
-        ~Texture();
+        virtual ~Texture();
         
-        bool load(const Image& image);
+        GLuint getTextureHandle() const {
+            return this->texture;
+        }
+        
+        GLenum getTextureType() const {
+            return this->type;
+        }
+
+        int getWidth() const {
+            return this->width;
+        }
+        
+        int getHeight() const {
+            return this->height;
+        }
+
         void bind(int target);
 
+    protected:
+        GLuint texture;
+        GLenum type;
+
+        int width;
+        int height;
+        
     private:
         Texture(const Texture&);
         Texture& operator =(const Texture&);
-
-        GLuint texture;
-        GLuint sampler;
 };
 
 #endif	/* TEXTURE_H */
