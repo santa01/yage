@@ -1,7 +1,11 @@
-#define _ISOC99_SOURCE
 #include <cmath>
 
 #include "Vec3.h"
+
+const Vec3 Vec3::UNIT_X(1.0f, 0.0f, 0.0f);
+const Vec3 Vec3::UNIT_Y(0.0f, 1.0f, 0.0f);
+const Vec3 Vec3::UNIT_Z(0.0f, 0.0f, 1.0f);
+const Vec3 Vec3::ZERO(0.0f, 0.0f, 0.0f);
 
 Vec3::Vec3() {
     for (int i = 0; i < 3; i++)
@@ -60,6 +64,12 @@ bool Vec3::operator !=(const Vec3& vector) const {
     return !(*this == vector);
 }
 
+Vec3 Vec3::operator -() const {
+    return Vec3(-this->vector[Vec3::X],
+                -this->vector[Vec3::Y],
+                -this->vector[Vec3::Z]);
+}
+
 float Vec3::dot(const Vec3& vector) const {
     return this->vector[Vec3::X] * vector.get(Vec3::X) +
            this->vector[Vec3::Y] * vector.get(Vec3::Y) +
@@ -75,11 +85,12 @@ Vec3 Vec3::cross(const Vec3& vector) const {
                         this->vector[Vec3::Y] * vector.get(Vec3::X));
 }
 
-void Vec3::normalize() {
+Vec3& Vec3::normalize() {
     float length = this->length();
     this->vector[Vec3::X] /= length;
     this->vector[Vec3::Y] /= length;
     this->vector[Vec3::Z] /= length;
+    return *this;
 }
 
 float Vec3::length() const {

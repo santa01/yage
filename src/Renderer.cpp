@@ -6,14 +6,14 @@
 #include "Logger.h"
 #include "RenderEffect.h"
 #include "TGAImage.h"
-#include "Texture.h"
+#include "ImageTexture.h"
 #include "Mesh.h"
 #include "Renderable.h"
 #include "Scene.h"
 #include "DirectedLight.h"
-#include "configuration.h"
 #include "PointLight.h"
 #include "SpotLight.h"
+#include "configuration.h"
 
 Renderer::Renderer():
         OpenGLWindow() {
@@ -37,9 +37,9 @@ void Renderer::onMouseMotionEvent(int x, int y) {
 
         this->cameraVerticalAngle += yAngle;
 
-        this->scene->getCamera().rotate(Vec3(0.0f, 1.0f, 0.0f), x * MOUSE_SPEED);
+        this->scene->getCamera().rotate(Vec3::UNIT_Y, x * MOUSE_SPEED);
         if (yAngle != 0) {
-            this->scene->getCamera().rotate(this->scene->getCamera().getRightVector(), yAngle);
+            this->scene->getCamera().rotate(this->scene->getCamera().getRight(), yAngle);
         }
     }
 }
@@ -56,13 +56,13 @@ void Renderer::onInit() {
     TGAImage image;
     image.load("textures/metal.tga");
 
-    Texture* texture = new Texture();
+    ImageTexture* texture = new ImageTexture();
     texture->load(image);
     
     RenderEffect* effect = new RenderEffect();
-    effect->setName("illumination");
-    effect->attachShader("shaders/mvp_transform.vs");
-    effect->attachShader("shaders/lambert_phong_shading.fs");
+    effect->setName("generic_illumination");
+    effect->attachShader("shaders/generic_illumination.vs");
+    effect->attachShader("shaders/generic_illumination.fs");
     
     Mesh* mesh = new Mesh();
     if (mesh->load("meshes/cube.mesh")) {
@@ -76,28 +76,83 @@ void Renderer::onInit() {
     
     mesh = new Mesh();
     if (mesh->load("meshes/cube.mesh")) {
+        mesh->setName("cube4");
+        mesh->setDiffuseTexture(texture);
+        mesh->setEffect(effect);
+        mesh->scale(10.0f);
+        mesh->scaleZ(0.01f);
+        mesh->setPosition(0.0f, 5.0f, 8.0f);
+        this->scene->addRenderable(mesh);
+    }
+    
+    mesh = new Mesh();
+    if (mesh->load("meshes/cube.mesh")) {
         mesh->setName("cube1");
         mesh->setDiffuseTexture(texture);
         mesh->setEffect(effect);
         mesh->setPosition(3.0f, 0.0f, 0.0f);
         mesh->roll(45.0f);
+        mesh->setCastsShadow(true);
         this->scene->addRenderable(mesh);
     }
 
+    mesh = new Mesh();
+    if (mesh->load("meshes/cube.mesh")) {
+        mesh->setName("cube2");
+        mesh->setDiffuseTexture(texture);
+        mesh->setEffect(effect);
+        mesh->setPosition(3.0f, 2.0f, 4.0f);
+        mesh->roll(20.0f);
+        mesh->setCastsShadow(true);
+        this->scene->addRenderable(mesh);
+    }
+    
+    mesh = new Mesh();
+    if (mesh->load("meshes/cube.mesh")) {
+        mesh->setName("cube3");
+        mesh->setDiffuseTexture(texture);
+        mesh->setEffect(effect);
+        mesh->setPosition(0.0f, 0.0f, 2.0f);
+        mesh->roll(85.0f);
+        mesh->yaw(30.0f);
+        mesh->setCastsShadow(true);
+        this->scene->addRenderable(mesh);
+    }
+    
     PointLight* light1 = new PointLight();
-    light1->setPosition(5.0f, 5.0f, -5.0f);
-    light1->setEnergy(3.0f);
+    light1->setPosition(1.0f, 3.0f, 1.0f);
+    light1->setEnergy(1.0f);
     light1->setFalloff(10.0f);
-    //this->scene->addLight(light1);
+    
+    PointLight* light5 = new PointLight();
+    light5->setPosition(2.0f, 3.0f, 1.0f);
+    light5->setEnergy(1.0f);
+    light5->setFalloff(10.0f);
+    this->scene->addLight(light5);
     
     SpotLight* light2 = new SpotLight();
-    light2->setPosition(5.0f, 5.0f, 5.0f);
-    light2->pitch(35.0f);
+    light2->setPosition(2.0f, 4.0f, -4.0f);
+    light2->setSize(50.0f);
+    light2->pitch(-70.0f);
+    light2->setEnergy(2.0f);
     this->scene->addLight(light2);
+    this->scene->addLight(light1);
     
-    this->scene->setAmbientLightIntensity(0.2f);
+    DirectedLight* light3 = new DirectedLight();
+    light3->setDirection(0.0f, -5.0f, 5.0f);
+    light3->setEnergy(0.1f);
+    //this->scene->addLight(light3);
+    
+    DirectedLight* light4 = new DirectedLight();
+    light4->setDirection(-5.0f, -5.0f, 5.0f);
+    light4->setEnergy(0.1f);
+    this->scene->addLight(light4);
+    
+    this->scene->setAmbientLightIntensity(0.1f);
     this->scene->getCamera().setPosition(1.5f, 1.5f, -5.0f);
-    this->scene->getCamera().setAspectRatio((float)this->width / this->height);
+    PerspectiveProjection* projection =
+            (PerspectiveProjection*)this->scene->getCamera().getProjection();
+    projection->setAspectRatio((float)this->width / this->height);
 
     this->captureMouse(true);
 }
@@ -127,29 +182,27 @@ void Renderer::onIdle() {
     float corrention = this->getFrameTime();
 
     if (this->keysStates[FORWARD]) {
-        cameraPosition += this->scene->getCamera().getTargetVector() *
+        cameraPosition += this->scene->getCamera().getTarget() *
                           FORWARD_SPEED * corrention;
     }
 
     if (this->keysStates[BACKWARD]) {
-        cameraPosition -= this->scene->getCamera().getTargetVector() *
+        cameraPosition -= this->scene->getCamera().getTarget() *
                           BACKWARD_SPEED  * corrention;
     }
 
     if (this->keysStates[STEP_RIGHT]) {
-        cameraPosition += this->scene->getCamera().getRightVector() *
+        cameraPosition += this->scene->getCamera().getRight() *
                           STEP_SPEED  * corrention;
     }
     
     if (this->keysStates[STEP_LEFT]) {
-        cameraPosition -= this->scene->getCamera().getRightVector() *
+        cameraPosition -= this->scene->getCamera().getRight() *
                           STEP_SPEED  * corrention;
     }
 
 //    if (this->keyStates[JUMP])
 //    if (this->keyStates[CROUCH])
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->scene->getCamera().setPosition(cameraPosition);
     this->scene->render();

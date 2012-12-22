@@ -17,7 +17,7 @@ class OpenGLWindow {
             KEY_PRESSED,
             KEY_RELEASED,
             BUTTON_PRESSED,
-            BUTTON_RELEASED,
+            BUTTON_RELEASED
         };
 
         OpenGLWindow();
@@ -53,12 +53,13 @@ class OpenGLWindow {
         virtual void onInit() = 0;
         virtual void onCleanup() = 0;
         virtual void onIdle() = 0;
-
+        
+    protected:
         std::string caption;
         int width;
         int height;
         bool fullScreen;
-        
+
     private:
         Window window, rootWindow;
         Display *display;
@@ -88,7 +89,6 @@ class OpenGLWindow {
         OpenGLWindow& operator =(const OpenGLWindow&);
 
         void initialize();
-        
         void initWindow();
         void destroyWindow();
 

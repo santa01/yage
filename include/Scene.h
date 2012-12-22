@@ -12,6 +12,9 @@
 #include "Light.h"
 #include "Camera.h"
 #include "Vec3.h"
+#include "FrameBuffer.h"
+#include "ShadowMapArray.h"
+#include "ShadowCubeMapArray.h"
 
 #pragma pack(push, 1)
 
@@ -56,18 +59,30 @@ class Scene {
         static const int AMBIENT_LIGHT_BUFFER = 0;
         static const int LIGHT_SOURCES_BUFFER = 1;
         
-        static const unsigned int MAX_LIGHTS = 16;
-        
         Scene(const Scene&);
         Scene& operator =(const Scene&);
         
         void updateAmbientLightBuffer();
+        void validateLightSources();
+        void renderToShadowMap(Light* lightSource);
+        
+        void normalRenderPass();
+        void shadowRenderPass();
         
         std::vector<Renderable*> renderables;
         std::vector<Light*> lights;
         std::set<RenderEffect*> effects;
         std::set<Texture*> textures;
+
         Camera camera;
+        
+        FrameBuffer depthBuffer;
+        FrameBuffer depthPointLightBuffer;
+
+        ShadowMapArray depthMaps;
+        ShadowCubeMapArray depthPointLightMaps;
+
+        RenderEffect* depthEffect;
         
         Vec3 ambientLightColor;
         float ambientLightIntensity;

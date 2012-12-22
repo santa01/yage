@@ -11,67 +11,80 @@
 set(YAGE_DIR "${PROJECT_SOURCE_DIR}")
 
 set(YAGE_SRC
+    src/Camera.cpp
+    src/Config.cpp
+    src/DirectedLight.cpp
+    src/Extention.cpp
+    src/FrameBuffer.cpp
+    src/Game.cpp
+    src/Image.cpp
+    src/ImageTexture.cpp
+    src/Light.cpp
+    src/Logger.cpp
+    src/main.cpp
+    src/Mat3.cpp
+    src/Mat4.cpp
+    src/Mesh.cpp
+    src/Movable.cpp
+    src/OpenGLWindow.cpp
+    src/OrthographicProjection.cpp
+    src/PerspectiveProjection.cpp
+    src/PointLight.cpp
+    src/Projection.cpp
+    src/Quaternion.cpp
+    src/Renderable.cpp
     src/RenderEffect.cpp
+    src/Renderer.cpp
+    src/Rotatable.cpp
+    src/Scalable.cpp
+    src/Scene.cpp
+    src/ShaderLoader.cpp
+    src/ShadowCubeMapArray.cpp
+    src/ShadowMapArray.cpp
+    src/SpotLight.cpp
+    src/Texture.cpp
     src/TGAImage.cpp
     src/Vec3.cpp
-    src/Image.cpp
-    src/Mat4.cpp
-    src/Rotatable.cpp
-    src/Camera.cpp
-    src/Scene.cpp
-    src/DirectedLight.cpp
-    src/Scalable.cpp
-    src/Quaternion.cpp
-    src/Texture.cpp
-    src/Frustum.cpp
-    src/Extention.cpp
-    src/Mat3.cpp
-    src/Game.cpp
-    src/Movable.cpp
-    src/Renderable.cpp
-    src/Light.cpp
-    src/Mesh.cpp
-    src/OpenGLWindow.cpp
-    src/Renderer.cpp
-    src/Logger.cpp
-    src/SpotLight.cpp
-    src/ShaderLoader.cpp
-    src/PointLight.cpp
     src/Vec4.cpp
-    src/Config.cpp
 )
 set(YAGE_SRC_FOUND "TRUE")
 
 set(YAGE_HEADERS
-    include/Rotatable.h
-    include/Mat4.h
-    include/configuration.h
-    include/TGAImage.h
-    include/Image.h
-    include/Logger.h
-    include/Mesh.h
-    include/Config.h
-    include/Mat3.h
-    include/Vec4.h
-    include/Scalable.h
-    include/Light.h
-    include/SpotLight.h
-    include/OpenGLWindow.h
-    include/Movable.h
-    include/DirectedLight.h
-    include/Quaternion.h
-    include/PointLight.h
-    include/Frustum.h
     include/Camera.h
+    include/Config.h
+    include/configuration.h
+    include/DirectedLight.h
+    include/Extention.h
+    include/FrameBuffer.h
+    include/Game.h
+    include/Image.h
+    include/ImageTexture.h
+    include/Light.h
+    include/Logger.h
+    include/Mat3.h
+    include/Mat4.h
+    include/Mesh.h
+    include/Movable.h
+    include/OpenGLWindow.h
+    include/OrthographicProjection.h
+    include/PerspectiveProjection.h
+    include/PointLight.h
+    include/Projection.h
+    include/Quaternion.h
+    include/Renderable.h
     include/RenderEffect.h
     include/Renderer.h
-    include/Vec3.h
+    include/Rotatable.h
+    include/Scalable.h
     include/Scene.h
-    include/Extention.h
-    include/Texture.h
-    include/Game.h
-    include/Renderable.h
     include/ShaderLoader.h
+    include/ShadowCubeMapArray.h
+    include/ShadowMapArray.h
+    include/SpotLight.h
+    include/Texture.h
+    include/TGAImage.h
+    include/Vec3.h
+    include/Vec4.h
 )
 set(YAGE_INCLUDE_DIR "${YAGE_DIR}/include")
 set(YAGE_HEADERS_FOUND "TRUE")
