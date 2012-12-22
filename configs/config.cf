@@ -1,21 +1,24 @@
-[video]
-width = 800
-height = 600
-fov = 90
-fullscreen = 0
+unbindall
+bind "w" "forward"
+bind "s" "backward"
+bind "a" "stepleft"
+bind "d" "stepright"
+bind "CTRL" "crouch"
+bind "SPACE" "jump"
+bind "ESC" "exit"
 
-[engine]
-verbose = 2
+pl_forwardspeed "4.0"
+pl_backwardspeed "2.0"
+pl_stepspeed "3.0"
+pl_mousespeed "0.2"
 
-[game]
-forward_speed = 100
-backward_speed = 50
-step_speed = 70
+gl_width "800"
+gl_height "600"
+gl_fullscreen "0"
+gl_vsync "0"  ; 0 - disabled, 1 - enabled, 2 - enabled adaptive
+gl_fov "70"
+gl_anisotropy "8"
+gl_msaa "0"
+gl_shadow "1024"
 
-[controls]
-forward = 25
-backward = 39
-step_left = 38
-step_right = 40
-crouch = 37
-jump = 65
+en_verbose "2"  ; 0 - error, 1 - warning, 2 - info
