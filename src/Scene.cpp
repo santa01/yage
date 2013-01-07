@@ -20,12 +20,15 @@ Scene::Scene():
     ambientLightData.ambientLightIntensity = this->ambientLightIntensity;
     memcpy(ambientLightData.ambientLightColor, this->ambientLightColor.data(),
             sizeof(ambientLightData.ambientLightColor));
+    
+    int lightsCount = 0;
 
     glGenBuffers(2, this->buffers);
     glBindBuffer(GL_UNIFORM_BUFFER, this->buffers[Scene::AMBIENT_LIGHT_BUFFER]);
     glBufferData(GL_UNIFORM_BUFFER, sizeof(ambientLightData), &ambientLightData, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, this->buffers[Scene::LIGHT_SOURCES_BUFFER]);
     glBufferData(GL_UNIFORM_BUFFER, 16 + sizeof(LightData) * RenderEffect::MAX_LIGHTS, NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(lightsCount), &lightsCount);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     
     this->depthEffect = new RenderEffect();

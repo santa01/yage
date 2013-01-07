@@ -7,9 +7,10 @@
 class ImageTexture: public Texture {
     public:
         ImageTexture();
-        ImageTexture(int anisotropyLevel);
+        ImageTexture(float anisotropyLevel);
 
-        int getAnisotropyLevel() const {
+        void setAnisotropyLevel(float anisotropyLevel);
+        float getAnisotropyLevel() const {
             return this->anisotropyLevel;
         }
 
@@ -18,7 +19,7 @@ class ImageTexture: public Texture {
     private:
         void initialize();
         
-        int anisotropyLevel;
+        float anisotropyLevel;
 };
 
 #endif	/* IMAGETEXTURE_H */

@@ -13,6 +13,9 @@
 #include "DirectedLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
+#include "SkyBox.h"
+#include "CubeTexture.h"
+#include "Extention.h"
 #include "configuration.h"
 
 Renderer::Renderer():
@@ -53,10 +56,19 @@ void Renderer::onKeyEvent(int state, int keycode) {
 void Renderer::onInit() {
     this->scene = new Scene();
 
+    float anisotropy = 0.0f;
+    if (Extention::isSupported("GL_EXT_texture_filter_anisotropic")) {
+        Logger::getInstance().log(Logger::LOG_INFO, "GL_EXT_texture_filter_anisotropic supported");
+        
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &anisotropy);
+        anisotropy = (ANISOTROPY > anisotropy) ? anisotropy : ANISOTROPY;
+        Logger::getInstance().log(Logger::LOG_INFO, "  textures will have anisotropic filtering level %f", anisotropy);
+    }
+
     TGAImage image;
     image.load("textures/metal.tga");
 
-    ImageTexture* texture = new ImageTexture();
+    ImageTexture* texture = new ImageTexture(anisotropy);
     texture->load(image);
     
     RenderEffect* effect = new RenderEffect();
@@ -119,6 +131,38 @@ void Renderer::onInit() {
         this->scene->addRenderable(mesh);
     }
     
+    RenderEffect* effect1 = new RenderEffect();
+    effect1->setName("skybox");
+    effect1->attachShader("shaders/skybox.vs");
+    effect1->attachShader("shaders/skybox.fs");
+
+    CubeTexture* skybox = new CubeTexture(anisotropy);
+
+    image.load("textures/sky/front.tga");
+    skybox->loadFaceImage(CubeTexture::FRONT_FACE, image);
+    
+    image.load("textures/sky/back.tga");
+    skybox->loadFaceImage(CubeTexture::BACK_FACE, image);
+    
+    image.load("textures/sky/right.tga");
+    skybox->loadFaceImage(CubeTexture::RIGHT_FACE, image);
+    
+    image.load("textures/sky/left.tga");
+    skybox->loadFaceImage(CubeTexture::LEFT_FACE, image);
+    
+    image.load("textures/sky/top.tga");
+    skybox->loadFaceImage(CubeTexture::TOP_FACE, image);
+    
+    image.load("textures/sky/bottom.tga");
+    skybox->loadFaceImage(CubeTexture::BOTTOM_FACE,image);
+    
+    SkyBox* sky = new SkyBox();
+    sky->setName("skybox");
+    sky->setEffect(effect1);
+    sky->setDiffuseTexture(skybox);
+    this->scene->addRenderable(sky);
+    this->scene->getCamera().setSkyBox(sky);
+
     PointLight* light1 = new PointLight();
     light1->setPosition(1.0f, 3.0f, 1.0f);
     light1->setEnergy(1.0f);
@@ -148,7 +192,7 @@ void Renderer::onInit() {
     light4->setEnergy(0.1f);
     this->scene->addLight(light4);
     
-    this->scene->setAmbientLightIntensity(0.1f);
+    this->scene->setAmbientLightIntensity(0.0f);
     this->scene->getCamera().setPosition(1.5f, 1.5f, -5.0f);
     PerspectiveProjection* projection =
             (PerspectiveProjection*)this->scene->getCamera().getProjection();

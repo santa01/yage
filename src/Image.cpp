@@ -3,7 +3,7 @@
 #include "Image.h"
 
 Image::Image() {
-    this->imageSize = 0;
+    this->imageDataSize = 0;
     this->imageData = NULL;
 }
 
