@@ -8,9 +8,19 @@ ImageTexture::ImageTexture() {
     this->initialize();
 }
 
-ImageTexture::ImageTexture(int anisotropyLevel) {
+ImageTexture::ImageTexture(float anisotropyLevel) {
     this->anisotropyLevel = anisotropyLevel;
     this->initialize();
+}
+
+void ImageTexture::setAnisotropyLevel(float anisotropyLevel) {
+    if (anisotropyLevel > 0.0f) {
+        this->anisotropyLevel = anisotropyLevel;
+
+        glBindTexture(GL_TEXTURE_2D, this->texture);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, this->anisotropyLevel);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 }
 
 bool ImageTexture::load(const Image& image) {
@@ -29,14 +39,6 @@ bool ImageTexture::load(const Image& image) {
     
     return false;
 }
-
-// JFI
-// if (ANISOTROPY > 1 && Extention::isSupported("GL_EXT_texture_filter_anisotropic")) {
-//     GLfloat maxAnisotropy;
-//     glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
-//     maxAnisotropy = (ANISOTROPY > maxAnisotropy) ? maxAnisotropy : ANISOTROPY;
-//     glSamplerParameteri(this->sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
-// }
 
 void ImageTexture::initialize() {
     this->type = GL_TEXTURE_2D;

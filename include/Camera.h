@@ -6,6 +6,7 @@
 #include "Mat4.h"
 #include "Vec3.h"
 #include "Projection.h"
+#include "SkyBox.h"
 #include "Movable.h"
 #include "Rotatable.h"
 
@@ -49,7 +50,16 @@ class Camera: public Movable, public Rotatable {
                 this->projection = new Projection(*projection);
             }
         }
-        
+
+        // TODO: Revove Camera <>-- SkyBox aggregation
+        SkyBox* getSkyBox() {
+            return this->skyBox;
+        }
+
+        void setSkyBox(SkyBox* skyBox) {
+            this->skyBox = skyBox;
+        }
+
         Vec3 getUp() const;
         Vec3 getTarget() const;
         Vec3 getRight() const;
@@ -62,6 +72,7 @@ class Camera: public Movable, public Rotatable {
         void initialize();
         
         Projection* projection;
+        SkyBox* skyBox;
         Mat4 translationMatrix;
         Mat4 rotationMatrix;
 };

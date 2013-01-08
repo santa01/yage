@@ -8,9 +8,12 @@ class ShadowMapArray: public Texture {
     public:
         ShadowMapArray();
         ShadowMapArray(int dimension);
-        
+
         void setDimension(int dimension);
-        
+        int getDimension() const {
+            return this->width;
+        }
+
     private:
         void initialize();
 };

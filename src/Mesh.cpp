@@ -72,11 +72,14 @@ bool Mesh::load(const std::string& name) {
     
     int vertexDataLength = header.facesOffset - sizeof(MeshHeader);
     this->vertexData = new char[vertexDataLength];
+    this->vertexNumber = vertexDataLength / sizeof(float) / 3;  // Three components per vertex
     file.read(this->vertexData, vertexDataLength);
     
     int facesDataLength = header.textureOffset - header.facesOffset;
     this->facesData = new char[facesDataLength];
+    this->facesNumber = facesDataLength / sizeof(int);
     file.read(this->facesData, facesDataLength);
+    file.close();
     
     glBindVertexArray(this->vao);
     
@@ -131,30 +134,6 @@ void Mesh::rotate(const Vec3& vector, float angle) {
     this->rotationMatrix = q.extractMat4();
 }
 
-void Mesh::scaleX(float factor) {
-    this->scalingMatrix.set(0, 0, factor);
-}
-
-void Mesh::scaleY(float factor) {
-    this->scalingMatrix.set(1, 1, factor);
-}
-
-void Mesh::scaleZ(float factor) {
-    this->scalingMatrix.set(2, 2, factor);
-}
-
-float Mesh::getXFactor() const {
-    return this->scalingMatrix.get(0, 0);
-}
-
-float Mesh::getYFactor() const {
-    return this->scalingMatrix.get(1, 1);
-}
-
-float Mesh::getZFactor() const {
-    return this->scalingMatrix.get(2, 2);
-}
-
 void Mesh::scale(float factor) {
     this->scalingMatrix.set(0, 0, factor);
     this->scalingMatrix.set(1, 1, factor);
@@ -175,7 +154,7 @@ void Mesh::render() {
     }
 
     glBindVertexArray(this->vao);
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLvoid*)0);  // TODO
+    glDrawElements(GL_TRIANGLES, this->facesNumber, GL_UNSIGNED_INT, (GLvoid*)0);
     glBindVertexArray(0);
 }
 
@@ -192,4 +171,6 @@ void Mesh::initialize() {
     
     this->facesData = NULL;
     this->vertexData = NULL;
+    this->vertexNumber = 0;
+    this->facesNumber = 0;
 }
